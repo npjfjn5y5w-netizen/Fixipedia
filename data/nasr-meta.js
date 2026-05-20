@@ -1,0 +1,1 @@
+window.NASR_META = {"source":"FAA NASR 28 Day Subscription","effectiveDate":"2024/12/26","generatedAt":"2026-05-20T22:47:53.862Z","counts":{"airports":20166,"waypoints":68970,"navaids":1713,"total":90849}};

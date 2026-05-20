@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fixipedia | Aviation Waypoint Names</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="Fixipedia home">
+      <span class="brand-mark">FX</span>
+      <span>
+        <strong>Fixipedia</strong>
+        <small>Waypoint name archive</small>
+      </span>
+    </a>
+
+    <nav class="nav-links" aria-label="Primary navigation">
+      <a href="#archive">Archive</a>
+      <a href="#submit">Submit a fix</a>
+      <a href="#workflow">How it works</a>
+      <a href="#standards">Source standards</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="workspace" id="archive">
+      <div class="search-panel" aria-labelledby="archive-title">
+        <div class="panel-heading">
+          <p class="eyebrow">Community aviation reference</p>
+          <h1 id="archive-title">Search aviation names, locations, and evidence.</h1>
+          <p class="intro">Look up airports, navaids, fixes, and RNAV waypoints, then document what each identifier or name is actually named after.</p>
+        </div>
+
+        <label class="search-box" for="searchInput">
+          <span class="search-icon" aria-hidden="true"></span>
+          <input id="searchInput" type="search" placeholder="Search KORD, BAWLL, O'Hare, Chicago, Coyle..." autocomplete="off">
+        </label>
+
+        <div class="filter-row" aria-label="Archive filters">
+          <button class="filter-button active" type="button" data-filter="all">All</button>
+          <button class="filter-button" type="button" data-filter="airport">Airports</button>
+          <button class="filter-button" type="button" data-filter="waypoint">Waypoints</button>
+          <button class="filter-button" type="button" data-filter="navaid">Navaids</button>
+        </div>
+
+        <div class="archive-meta">
+          <span id="resultCount">0 records</span>
+          <span>Catalog prototype</span>
+        </div>
+
+        <div class="results-list" id="resultsList" aria-label="Waypoint search results"></div>
+      </div>
+
+      <article class="detail-panel" id="detailPanel" aria-live="polite"></article>
+    </section>
+
+    <section class="workflow-band" id="workflow">
+      <div>
+        <p class="eyebrow">How Fixipedia works</p>
+        <h2>Catalog first, meaning second, evidence always.</h2>
+      </div>
+      <div class="workflow-grid">
+        <div>
+          <strong>1. Find the record</strong>
+          <p>Search NASR airports, waypoints, and navaids by identifier, name, location, chart use, or frequency.</p>
+        </div>
+        <div>
+          <strong>2. Add the story</strong>
+          <p>Use Submit a fix to attach the namesake, confidence level, evidence trail, and open research.</p>
+        </div>
+        <div>
+          <strong>3. Review researched names</strong>
+          <div class="recent-list" id="recentResearchList"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="submit-grid" id="submit">
+      <div>
+        <p class="eyebrow">Submit a fix</p>
+        <h2>Add or update a name-origin note.</h2>
+        <p class="section-copy">Submissions open a prefilled GitHub Issue so each name-origin claim can be reviewed before it becomes part of the public archive.</p>
+      </div>
+      <form class="submission-form" id="submissionForm">
+        <label>
+          <span>Identifier</span>
+          <input id="submitCode" name="code" type="text" placeholder="KORD, BAWLL, CYY" required>
+        </label>
+
+        <label>
+          <span>Named after</span>
+          <textarea id="submitNamedAfter" name="namedAfter" rows="3" placeholder="Who or what is this named after?" required></textarea>
+        </label>
+
+        <label>
+          <span>Confidence</span>
+          <select id="submitConfidence" name="confidence" required>
+            <option value="unverified">Unverified lead</option>
+            <option value="likely">Likely</option>
+            <option value="confirmed">Confirmed</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Evidence</span>
+          <textarea id="submitEvidence" name="evidence" rows="4" placeholder="What evidence connects this identifier or facility name to that origin?" required></textarea>
+        </label>
+
+        <label>
+          <span>Source links or citations</span>
+          <textarea id="submitSources" name="sources" rows="4" placeholder="Paste source URLs, book citations, chart references, or official documents." required></textarea>
+        </label>
+
+        <label>
+          <span>Open questions</span>
+          <textarea id="submitOpenQuestions" name="openQuestions" rows="3" placeholder="What still needs to be checked before this becomes a reviewed Fixipedia note?"></textarea>
+        </label>
+
+        <div class="form-actions">
+          <button class="primary-button" type="submit">Open GitHub issue</button>
+          <button class="secondary-button" id="useSelectedRecord" type="button">Use selected record</button>
+          <span class="form-status" id="submissionStatus" role="status"></span>
+        </div>
+      </form>
+    </section>
+
+    <section class="standards" id="standards">
+      <p class="eyebrow">Source standards</p>
+      <h2>Confidence labels keep the archive honest.</h2>
+      <div class="standards-grid">
+        <div>
+          <strong>Confirmed</strong>
+          <p>Direct source or official documentation names the origin.</p>
+        </div>
+        <div>
+          <strong>Likely</strong>
+          <p>Strong contextual evidence, but no direct naming source yet.</p>
+        </div>
+        <div>
+          <strong>Unverified</strong>
+          <p>A useful lead that needs corroboration before being treated as fact.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="data/nasr-meta.js"></script>
+  <script src="data/nasr-manifest.js"></script>
+  <script src="data/fixipedia-notes.js"></script>
+  <script src="data/nasr-navaids.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

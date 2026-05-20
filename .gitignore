@@ -1,0 +1,9 @@
+data/raw/
+data/nasr-catalog.js
+data/nasr-airports.js
+data/nasr-waypoints.js
+data/nasr-airports-*.js
+data/nasr-waypoints-*.js
+airport-data/nasr-airports.js
+waypoint-data/nasr-waypoints.js
+*.zip
