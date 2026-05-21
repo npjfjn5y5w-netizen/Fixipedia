@@ -124,6 +124,7 @@ main {
   align-items: end;
   grid-template-columns: minmax(320px, 1fr) minmax(420px, 0.82fr);
   margin-bottom: 22px;
+  padding: 28px;
 }
 
 .workspace {
