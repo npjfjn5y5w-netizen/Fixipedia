@@ -9,10 +9,9 @@
   --green: #246b54;
   --green-dark: #154734;
   --teal: #1d7082;
-  --purple: #4d148c;
-  --purple-dark: #35105f;
   --orange: #ff6600;
   --orange-dark: #c84f00;
+  --orange-soft: #fff1e8;
   --gold: #ad7a19;
   --red: #a24b44;
   --shadow: 0 18px 55px rgba(31, 52, 48, 0.13);
@@ -31,7 +30,7 @@ html {
 body {
   margin: 0;
   background:
-    linear-gradient(90deg, rgba(77, 20, 140, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(36, 107, 84, 0.04) 1px, transparent 1px),
     linear-gradient(0deg, rgba(255, 102, 0, 0.035) 1px, transparent 1px),
     var(--surface);
   background-size: 48px 48px;
@@ -67,7 +66,7 @@ a {
 
 .brand-mark {
   align-items: center;
-  background: linear-gradient(135deg, var(--purple) 0 56%, var(--orange) 56% 100%);
+  background: linear-gradient(135deg, var(--green-dark) 0 66%, var(--orange) 66% 100%);
   border-radius: 8px;
   color: #fff;
   display: inline-flex;
@@ -108,7 +107,7 @@ a {
 }
 
 .nav-links a:hover {
-  color: var(--purple);
+  color: var(--orange-dark);
 }
 
 main {
@@ -156,7 +155,7 @@ main {
 }
 
 .eyebrow {
-  color: var(--purple);
+  color: var(--orange-dark);
   font-size: 0.76rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -192,7 +191,7 @@ main {
 }
 
 .catalog-summary-label {
-  background: linear-gradient(135deg, var(--purple) 0 62%, var(--orange) 62% 100%);
+  background: linear-gradient(135deg, var(--green-dark) 0 72%, var(--orange) 72% 100%);
 }
 
 .catalog-summary span,
@@ -239,7 +238,7 @@ main {
 }
 
 .search-icon {
-  border: 2px solid var(--purple);
+  border: 2px solid var(--orange);
   border-radius: 50%;
   height: 15px;
   position: relative;
@@ -291,8 +290,8 @@ input[type="search"] {
 
 .filter-button.active,
 .filter-button:hover {
-  background: var(--purple);
-  border-color: var(--purple);
+  background: var(--orange);
+  border-color: var(--orange);
   color: #fff;
 }
 
@@ -325,8 +324,8 @@ input[type="search"] {
 
 .result-card:hover,
 .result-card.selected {
-  border-color: rgba(77, 20, 140, 0.72);
-  box-shadow: 0 10px 24px rgba(77, 20, 140, 0.12);
+  border-color: rgba(255, 102, 0, 0.76);
+  box-shadow: 0 10px 24px rgba(255, 102, 0, 0.13);
 }
 
 .result-topline,
@@ -354,8 +353,8 @@ input[type="search"] {
 
 .tag.confirmed,
 .tag.type-airport {
-  background: rgba(77, 20, 140, 0.12);
-  color: var(--purple);
+  background: rgba(36, 107, 84, 0.12);
+  color: var(--green-dark);
 }
 
 .tag.likely,
@@ -392,7 +391,7 @@ input[type="search"] {
 .detail-hero {
   background:
     radial-gradient(circle at 24% 20%, rgba(255, 255, 255, 0.22), transparent 26%),
-    linear-gradient(135deg, #241136, #4d148c 55%, #ff6600);
+    linear-gradient(135deg, #143b37, #246b54 58%, #ff6600);
   color: #fff;
   min-height: 260px;
   padding: 30px;
@@ -402,13 +401,13 @@ input[type="search"] {
 .detail-airport {
   background:
     radial-gradient(circle at 24% 20%, rgba(255, 255, 255, 0.22), transparent 26%),
-    linear-gradient(135deg, #241136, #4d148c 55%, #ff6600);
+    linear-gradient(135deg, #143b37, #246b54 58%, #ff6600);
 }
 
 .detail-waypoint {
   background:
     radial-gradient(circle at 30% 18%, rgba(255, 255, 255, 0.22), transparent 26%),
-    linear-gradient(135deg, #35220b, #c84f00 58%, #4d148c);
+    linear-gradient(135deg, #4f2604, #c84f00 58%, #246b54);
 }
 
 .detail-navaid {
@@ -602,7 +601,7 @@ input[type="search"] {
 }
 
 .recent-list button:hover {
-  border-color: var(--purple);
+  border-color: var(--orange);
 }
 
 .recent-list span {
@@ -661,8 +660,8 @@ input[type="search"] {
 .submission-form input:focus,
 .submission-form select:focus,
 .submission-form textarea:focus {
-  border-color: var(--purple);
-  box-shadow: 0 0 0 3px rgba(77, 20, 140, 0.12);
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.14);
 }
 
 .form-row {
@@ -689,20 +688,20 @@ input[type="search"] {
 }
 
 .primary-button {
-  background: var(--purple);
-  border: 1px solid var(--purple);
+  background: var(--orange);
+  border: 1px solid var(--orange);
   color: #fff;
 }
 
 .primary-button:hover {
-  background: var(--purple-dark);
-  border-color: var(--purple-dark);
+  background: var(--orange-dark);
+  border-color: var(--orange-dark);
 }
 
 .secondary-button {
   background: #fff;
   border: 1px solid var(--line);
-  color: var(--purple);
+  color: var(--orange-dark);
 }
 
 .form-status {
