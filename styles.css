@@ -165,20 +165,26 @@ main {
 }
 
 .catalog-summary {
-  border-bottom: 1px solid var(--line);
-  border-top: 1px solid var(--line);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
   display: grid;
   gap: 0;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   margin-top: 24px;
+  overflow: hidden;
 }
 
 .catalog-summary div {
-  padding: 14px 12px;
+  padding: 15px 14px;
 }
 
 .catalog-summary div + div {
   border-left: 1px solid var(--line);
+}
+
+.catalog-summary-label {
+  background: var(--green-dark);
 }
 
 .catalog-summary span,
@@ -193,10 +199,18 @@ main {
   text-transform: uppercase;
 }
 
+.catalog-summary-label span {
+  color: rgba(255, 255, 255, 0.72);
+}
+
 .catalog-summary strong {
   color: var(--ink);
   font-size: 1.25rem;
   margin-top: 5px;
+}
+
+.catalog-summary-label strong {
+  color: #fff;
 }
 
 .section-copy {

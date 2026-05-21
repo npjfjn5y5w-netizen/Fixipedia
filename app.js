@@ -97,10 +97,10 @@ const submissionForm = document.querySelector("#submissionForm");
 const submissionStatus = document.querySelector("#submissionStatus");
 const useSelectedRecordButton = document.querySelector("#useSelectedRecord");
 const recentResearchList = document.querySelector("#recentResearchList");
+const catalogTotal = document.querySelector("#catalogTotal");
 const airportCount = document.querySelector("#airportCount");
 const waypointCount = document.querySelector("#waypointCount");
 const navaidCount = document.querySelector("#navaidCount");
-const reviewedCount = document.querySelector("#reviewedCount");
 
 let activeFilter = "all";
 let selectedId = records[0]?.id ?? null;
@@ -170,14 +170,11 @@ function updateArchiveMeta() {
 
 function renderCatalogSummary() {
   const counts = catalog.counts ?? {};
-  const reviewedNotes = Object.values(researchNotes)
-    .filter((note) => note.confidence && note.confidence !== "unverified")
-    .length;
 
+  if (catalogTotal) catalogTotal.textContent = (counts.total ?? 0).toLocaleString();
   if (airportCount) airportCount.textContent = (counts.airports ?? 0).toLocaleString();
   if (waypointCount) waypointCount.textContent = (counts.waypoints ?? 0).toLocaleString();
   if (navaidCount) navaidCount.textContent = (counts.navaids ?? 0).toLocaleString();
-  if (reviewedCount) reviewedCount.textContent = reviewedNotes.toLocaleString();
 }
 
 function renderResults() {
