@@ -97,6 +97,10 @@ const submissionForm = document.querySelector("#submissionForm");
 const submissionStatus = document.querySelector("#submissionStatus");
 const useSelectedRecordButton = document.querySelector("#useSelectedRecord");
 const recentResearchList = document.querySelector("#recentResearchList");
+const airportCount = document.querySelector("#airportCount");
+const waypointCount = document.querySelector("#waypointCount");
+const navaidCount = document.querySelector("#navaidCount");
+const reviewedCount = document.querySelector("#reviewedCount");
 
 let activeFilter = "all";
 let selectedId = records[0]?.id ?? null;
@@ -162,6 +166,18 @@ function updateArchiveMeta() {
     : `${loaded.toLocaleString()} of ${total.toLocaleString()} records loaded`;
 
   archiveMeta.textContent = `${catalog.source} / ${catalog.effectiveDate} / ${loadText}`;
+}
+
+function renderCatalogSummary() {
+  const counts = catalog.counts ?? {};
+  const reviewedNotes = Object.values(researchNotes)
+    .filter((note) => note.confidence && note.confidence !== "unverified")
+    .length;
+
+  if (airportCount) airportCount.textContent = (counts.airports ?? 0).toLocaleString();
+  if (waypointCount) waypointCount.textContent = (counts.waypoints ?? 0).toLocaleString();
+  if (navaidCount) navaidCount.textContent = (counts.navaids ?? 0).toLocaleString();
+  if (reviewedCount) reviewedCount.textContent = reviewedNotes.toLocaleString();
 }
 
 function renderResults() {
@@ -601,4 +617,5 @@ submissionForm?.addEventListener("submit", async (event) => {
   submissionStatus.textContent = `Opening GitHub issue for ${code}.`;
 });
 
+renderCatalogSummary();
 renderResults();

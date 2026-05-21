@@ -130,7 +130,7 @@ main {
   display: flex;
   flex-direction: column;
   min-height: 640px;
-  padding: 24px;
+  padding: 28px;
 }
 
 .panel-heading h1,
@@ -143,7 +143,7 @@ main {
 }
 
 .panel-heading h1 {
-  font-size: clamp(2.1rem, 6vw, 4.7rem);
+  font-size: clamp(2.4rem, 6vw, 5rem);
   max-width: 780px;
 }
 
@@ -162,6 +162,41 @@ main {
   line-height: 1.55;
   margin: 16px 0 0;
   max-width: 660px;
+}
+
+.catalog-summary {
+  border-bottom: 1px solid var(--line);
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: 24px;
+}
+
+.catalog-summary div {
+  padding: 14px 12px;
+}
+
+.catalog-summary div + div {
+  border-left: 1px solid var(--line);
+}
+
+.catalog-summary span,
+.catalog-summary strong {
+  display: block;
+}
+
+.catalog-summary span {
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.catalog-summary strong {
+  color: var(--ink);
+  font-size: 1.25rem;
+  margin-top: 5px;
 }
 
 .section-copy {
@@ -711,10 +746,16 @@ input[type="search"] {
   .catalog-facts,
   .split-section,
   .form-row,
+  .catalog-summary,
   .workflow-grid,
   .submission-checklist,
   .standards-grid {
     grid-template-columns: 1fr;
+  }
+
+  .catalog-summary div + div {
+    border-left: 0;
+    border-top: 1px solid var(--line);
   }
 
   .archive-meta {

@@ -12,7 +12,7 @@
       <span class="brand-mark">FX</span>
       <span>
         <strong>Fixipedia</strong>
-        <small>Waypoint name archive</small>
+        <small>Aviation name archive</small>
       </span>
     </a>
 
@@ -28,9 +28,28 @@
     <section class="workspace" id="archive">
       <div class="search-panel" aria-labelledby="archive-title">
         <div class="panel-heading">
-          <p class="eyebrow">Community aviation reference</p>
-          <h1 id="archive-title">Search aviation names, locations, and evidence.</h1>
-          <p class="intro">Look up airports, navaids, fixes, and RNAV waypoints, then document what each identifier or name is actually named after.</p>
+          <p class="eyebrow">Public aviation reference</p>
+          <h1 id="archive-title">Fixipedia aviation name archive</h1>
+          <p class="intro">Search FAA catalog records for airports, navaids, fixes, and RNAV waypoints, then connect each name to reviewed origin notes and source evidence.</p>
+        </div>
+
+        <div class="catalog-summary" aria-label="Catalog summary">
+          <div>
+            <span>Airports</span>
+            <strong id="airportCount">0</strong>
+          </div>
+          <div>
+            <span>Waypoints</span>
+            <strong id="waypointCount">0</strong>
+          </div>
+          <div>
+            <span>Navaids</span>
+            <strong id="navaidCount">0</strong>
+          </div>
+          <div>
+            <span>Reviewed notes</span>
+            <strong id="reviewedCount">0</strong>
+          </div>
         </div>
 
         <label class="search-box" for="searchInput">
@@ -47,7 +66,7 @@
 
         <div class="archive-meta">
           <span id="resultCount">0 records</span>
-          <span>Catalog prototype</span>
+          <span>Loading catalog</span>
         </div>
 
         <div class="results-list" id="resultsList" aria-label="Waypoint search results"></div>
