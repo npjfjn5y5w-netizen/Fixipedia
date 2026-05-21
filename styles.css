@@ -9,9 +9,15 @@
   --green: #246b54;
   --green-dark: #154734;
   --teal: #1d7082;
+  --purple: #4d148c;
+  --purple-dark: #35105f;
+  --orange: #ff6600;
+  --orange-dark: #c84f00;
   --gold: #ad7a19;
   --red: #a24b44;
   --shadow: 0 18px 55px rgba(31, 52, 48, 0.13);
+  --font-display: "Aptos Display", "Segoe UI Variable Display", "Segoe UI", sans-serif;
+  --font-body: "Aptos", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
 }
 
 * {
@@ -25,12 +31,12 @@ html {
 body {
   margin: 0;
   background:
-    linear-gradient(90deg, rgba(36, 107, 84, 0.05) 1px, transparent 1px),
-    linear-gradient(0deg, rgba(36, 107, 84, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(77, 20, 140, 0.045) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255, 102, 0, 0.035) 1px, transparent 1px),
     var(--surface);
   background-size: 48px 48px;
   color: var(--ink);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--font-body);
 }
 
 a {
@@ -61,7 +67,7 @@ a {
 
 .brand-mark {
   align-items: center;
-  background: var(--green-dark);
+  background: linear-gradient(135deg, var(--purple) 0 56%, var(--orange) 56% 100%);
   border-radius: 8px;
   color: #fff;
   display: inline-flex;
@@ -79,6 +85,7 @@ a {
 }
 
 .brand strong {
+  font-family: var(--font-display);
   font-size: 1.02rem;
 }
 
@@ -101,7 +108,7 @@ a {
 }
 
 .nav-links a:hover {
-  color: var(--green-dark);
+  color: var(--purple);
 }
 
 main {
@@ -137,6 +144,7 @@ main {
 .workflow-band h2,
 .submit-grid h2,
 .standards h2 {
+  font-family: var(--font-display);
   letter-spacing: 0;
   line-height: 1.05;
   margin: 0;
@@ -148,7 +156,7 @@ main {
 }
 
 .eyebrow {
-  color: var(--green);
+  color: var(--purple);
   font-size: 0.76rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -184,7 +192,7 @@ main {
 }
 
 .catalog-summary-label {
-  background: var(--green-dark);
+  background: linear-gradient(135deg, var(--purple) 0 62%, var(--orange) 62% 100%);
 }
 
 .catalog-summary span,
@@ -231,7 +239,7 @@ main {
 }
 
 .search-icon {
-  border: 2px solid var(--green);
+  border: 2px solid var(--purple);
   border-radius: 50%;
   height: 15px;
   position: relative;
@@ -239,7 +247,7 @@ main {
 }
 
 .search-icon::after {
-  background: var(--green);
+  background: var(--orange);
   content: "";
   height: 7px;
   position: absolute;
@@ -283,8 +291,8 @@ input[type="search"] {
 
 .filter-button.active,
 .filter-button:hover {
-  background: var(--green-dark);
-  border-color: var(--green-dark);
+  background: var(--purple);
+  border-color: var(--purple);
   color: #fff;
 }
 
@@ -317,8 +325,8 @@ input[type="search"] {
 
 .result-card:hover,
 .result-card.selected {
-  border-color: rgba(36, 107, 84, 0.8);
-  box-shadow: 0 10px 24px rgba(36, 107, 84, 0.12);
+  border-color: rgba(77, 20, 140, 0.72);
+  box-shadow: 0 10px 24px rgba(77, 20, 140, 0.12);
 }
 
 .result-topline,
@@ -331,6 +339,7 @@ input[type="search"] {
 
 .code {
   color: var(--ink);
+  font-family: var(--font-display);
   font-size: 1.35rem;
   font-weight: 800;
 }
@@ -345,14 +354,14 @@ input[type="search"] {
 
 .tag.confirmed,
 .tag.type-airport {
-  background: rgba(36, 107, 84, 0.12);
-  color: var(--green-dark);
+  background: rgba(77, 20, 140, 0.12);
+  color: var(--purple);
 }
 
 .tag.likely,
 .tag.type-waypoint {
-  background: rgba(173, 122, 25, 0.14);
-  color: var(--gold);
+  background: rgba(255, 102, 0, 0.14);
+  color: var(--orange-dark);
 }
 
 .tag.unverified,
@@ -383,7 +392,7 @@ input[type="search"] {
 .detail-hero {
   background:
     radial-gradient(circle at 24% 20%, rgba(255, 255, 255, 0.22), transparent 26%),
-    linear-gradient(135deg, #143b37, #1d7082 58%, #6a6f3b);
+    linear-gradient(135deg, #241136, #4d148c 55%, #ff6600);
   color: #fff;
   min-height: 260px;
   padding: 30px;
@@ -393,13 +402,13 @@ input[type="search"] {
 .detail-airport {
   background:
     radial-gradient(circle at 24% 20%, rgba(255, 255, 255, 0.22), transparent 26%),
-    linear-gradient(135deg, #143b37, #1d7082 58%, #6a6f3b);
+    linear-gradient(135deg, #241136, #4d148c 55%, #ff6600);
 }
 
 .detail-waypoint {
   background:
     radial-gradient(circle at 30% 18%, rgba(255, 255, 255, 0.22), transparent 26%),
-    linear-gradient(135deg, #4f3f12, #ad7a19 58%, #246b54);
+    linear-gradient(135deg, #35220b, #c84f00 58%, #4d148c);
 }
 
 .detail-navaid {
@@ -428,6 +437,7 @@ input[type="search"] {
 }
 
 .detail-code {
+  font-family: var(--font-display);
   font-size: clamp(3rem, 8vw, 7.8rem);
   font-weight: 800;
   line-height: 0.95;
@@ -592,7 +602,7 @@ input[type="search"] {
 }
 
 .recent-list button:hover {
-  border-color: var(--green);
+  border-color: var(--purple);
 }
 
 .recent-list span {
@@ -651,8 +661,8 @@ input[type="search"] {
 .submission-form input:focus,
 .submission-form select:focus,
 .submission-form textarea:focus {
-  border-color: var(--green);
-  box-shadow: 0 0 0 3px rgba(36, 107, 84, 0.12);
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px rgba(77, 20, 140, 0.12);
 }
 
 .form-row {
@@ -679,15 +689,20 @@ input[type="search"] {
 }
 
 .primary-button {
-  background: var(--green-dark);
-  border: 1px solid var(--green-dark);
+  background: var(--purple);
+  border: 1px solid var(--purple);
   color: #fff;
+}
+
+.primary-button:hover {
+  background: var(--purple-dark);
+  border-color: var(--purple-dark);
 }
 
 .secondary-button {
   background: #fff;
   border: 1px solid var(--line);
-  color: var(--green-dark);
+  color: var(--purple);
 }
 
 .form-status {
