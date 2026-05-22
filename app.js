@@ -103,7 +103,7 @@ const waypointCount = document.querySelector("#waypointCount");
 const navaidCount = document.querySelector("#navaidCount");
 
 let activeFilter = "all";
-let selectedId = records[0]?.id ?? null;
+let selectedId = null;
 let visibleLimit = 5;
 let nearbyLoadPromise = null;
 
@@ -120,6 +120,10 @@ function escapeHtml(value) {
 
 function normalize(value) {
   return String(value ?? "").toLowerCase().trim();
+}
+
+function hasSearchQuery() {
+  return Boolean(normalize(searchInput.value));
 }
 
 function titleCase(value) {
@@ -225,9 +229,11 @@ function getSearchBlob(record) {
 function getFilteredRecords() {
   const query = normalize(searchInput.value);
 
+  if (!query) return [];
+
   return records.filter((record) => {
     const matchesFilter = activeFilter === "all" || record.entityType === activeFilter;
-    const matchesSearch = !query || normalize(getSearchBlob(record)).includes(query);
+    const matchesSearch = normalize(getSearchBlob(record)).includes(query);
     return matchesFilter && matchesSearch;
   });
 }
@@ -262,6 +268,15 @@ function renderCatalogSummary() {
 }
 
 function renderResults() {
+  if (!hasSearchQuery()) {
+    selectedId = null;
+    resultCount.textContent = dataLoadMessage || "Start typing to search the catalog";
+    resultsList.innerHTML = "";
+    updateArchiveMeta();
+    renderDetail();
+    return;
+  }
+
   const filtered = getFilteredRecords();
   const visible = filtered.slice(0, visibleLimit);
   const limitedText = filtered.length > visible.length ? `, showing first ${visible.length}` : "";
