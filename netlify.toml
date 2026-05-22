@@ -1,0 +1,14 @@
+[[redirects]]
+from = "/airport/*"
+to = "/index.html"
+status = 200
+
+[[redirects]]
+from = "/waypoint/*"
+to = "/index.html"
+status = 200
+
+[[redirects]]
+from = "/navaid/*"
+to = "/index.html"
+status = 200

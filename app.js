@@ -105,6 +105,18 @@ const navaidCount = document.querySelector("#navaidCount");
 let activeFilter = "all";
 let selectedId = records[0]?.id ?? null;
 let visibleLimit = 5;
+let nearbyLoadPromise = null;
+
+const routeEntities = new Set(["airport", "waypoint", "navaid"]);
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
 
 function normalize(value) {
   return String(value ?? "").toLowerCase().trim();
@@ -113,6 +125,78 @@ function normalize(value) {
 function titleCase(value) {
   const text = String(value ?? "");
   return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+function getRoutePath(record) {
+  if (!record) return "/";
+
+  const entity = record.entityType;
+  const code = encodeURIComponent(record.code);
+  const country = encodeURIComponent(record.country || "US");
+
+  if (entity === "airport") return `/airport/${code}`;
+  if (entity === "waypoint") return `/waypoint/${country}/${code}`;
+  if (entity === "navaid") return `/navaid/${country}/${code}`;
+  return "/";
+}
+
+function getRouteHref(record) {
+  return getRoutePath(record);
+}
+
+function parseRoute() {
+  const hashPath = window.location.hash.startsWith("#/")
+    ? window.location.hash.slice(1)
+    : "";
+  const path = hashPath || window.location.pathname;
+  const parts = path.split("/").filter(Boolean).map(decodeURIComponent);
+
+  if (!parts.length || !routeEntities.has(parts[0])) return null;
+
+  const entity = parts[0];
+  if (entity === "airport") {
+    const code = parts.length >= 3 ? parts[2] : parts[1];
+    const country = parts.length >= 3 ? parts[1] : "";
+    return code ? { entity, country: country.toUpperCase(), code: code.toUpperCase() } : null;
+  }
+
+  const country = parts[1];
+  const code = parts[2];
+  return country && code
+    ? { entity, country: country.toUpperCase(), code: code.toUpperCase() }
+    : null;
+}
+
+function findRecordByRoute(route) {
+  if (!route) return null;
+
+  const matches = records.filter((record) => (
+    record.entityType === route.entity &&
+    record.code?.toUpperCase() === route.code
+  ));
+
+  return matches.find((record) => record.country?.toUpperCase() === route.country) ?? matches[0] ?? null;
+}
+
+function pushRecordRoute(record) {
+  const path = getRoutePath(record);
+  if (window.location.pathname === path && !window.location.hash) return;
+  history.pushState({ recordId: record.id }, "", path);
+}
+
+function setSelectedRecord(record, options = {}) {
+  if (!record) return;
+
+  selectedId = record.id;
+  if (options.syncSearch) {
+    searchInput.value = record.code;
+    activeFilter = "all";
+    filterButtons.forEach((filterButton) => {
+      filterButton.classList.toggle("active", filterButton.dataset.filter === "all");
+    });
+  }
+  if (options.pushRoute) pushRecordRoute(record);
+  renderResults();
 }
 
 function getSearchBlob(record) {
@@ -189,19 +273,19 @@ function renderResults() {
   }
 
   resultsList.innerHTML = visible.map((record) => `
-    <button class="result-card ${record.id === selectedId ? "selected" : ""}" type="button" data-id="${record.id}">
+    <a class="result-card ${record.id === selectedId ? "selected" : ""}" href="${getRouteHref(record)}" data-id="${record.id}">
       <span class="result-topline">
-        <span class="code">${record.code}</span>
-        <span class="tag type-${record.entityType}">${titleCase(record.entityType)}</span>
+        <span class="code">${escapeHtml(record.code)}</span>
+        <span class="tag type-${record.entityType}">${escapeHtml(titleCase(record.entityType))}</span>
       </span>
-      <p>${record.name} / ${record.location}</p>
+      <p>${escapeHtml(record.name)} / ${escapeHtml(record.location)}</p>
       <span class="result-meta">
-        <span>${record.facilityType}</span>
-        ${record.frequency ? `<span aria-hidden="true">/</span><span>${record.frequency}</span>` : ""}
+        <span>${escapeHtml(record.facilityType)}</span>
+        ${record.frequency ? `<span aria-hidden="true">/</span><span>${escapeHtml(record.frequency)}</span>` : ""}
         <span aria-hidden="true">/</span>
-        <span>${titleCase(record.confidence)} namesake</span>
+        <span>${escapeHtml(titleCase(record.confidence))} namesake</span>
       </span>
-    </button>
+    </a>
   `).join("");
 
   if (!filtered.length) {
@@ -231,7 +315,7 @@ function addCatalogRecords(newRecords) {
 function loadScript(source) {
   return new Promise((resolve, reject) => {
     const script = document.createElement("script");
-    script.src = source;
+    script.src = source.startsWith("/") ? source : `/${source}`;
     script.async = true;
     script.onload = () => resolve();
     script.onerror = () => reject(new Error(`Unable to load ${source}`));
@@ -321,6 +405,84 @@ async function loadAllCatalogData() {
   await Promise.all(["airport", "waypoint"].map(loadEntity));
 }
 
+function getDistanceNm(origin, target) {
+  if (!Number.isFinite(origin.latDecimal) || !Number.isFinite(origin.lonDecimal)) return Infinity;
+  if (!Number.isFinite(target.latDecimal) || !Number.isFinite(target.lonDecimal)) return Infinity;
+
+  const radiusNm = 3440.065;
+  const toRadians = (degrees) => degrees * Math.PI / 180;
+  const lat1 = toRadians(origin.latDecimal);
+  const lat2 = toRadians(target.latDecimal);
+  const deltaLat = toRadians(target.latDecimal - origin.latDecimal);
+  const deltaLon = toRadians(target.lonDecimal - origin.lonDecimal);
+  const a = Math.sin(deltaLat / 2) ** 2
+    + Math.cos(lat1) * Math.cos(lat2) * Math.sin(deltaLon / 2) ** 2;
+
+  return 2 * radiusNm * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function getNearbyRecords(record, entityType, limit = 12) {
+  return records
+    .filter((entry) => entry.id !== record.id && entry.entityType === entityType)
+    .map((entry) => ({ record: entry, distance: getDistanceNm(record, entry) }))
+    .filter((entry) => Number.isFinite(entry.distance))
+    .sort((a, b) => a.distance - b.distance)
+    .slice(0, limit);
+}
+
+function renderNearbySection(record, entityType, heading) {
+  const nearby = getNearbyRecords(record, entityType, entityType === "waypoint" ? 48 : 12);
+  const isLoading = !isCatalogFullyLoaded();
+
+  if (!nearby.length && isLoading) {
+    return `
+      <section class="detail-section nearby-section">
+        <h3>${escapeHtml(heading)}</h3>
+        <p>Loading nearby ${escapeHtml(entityType)} records...</p>
+      </section>
+    `;
+  }
+
+  if (!nearby.length) {
+    return `
+      <section class="detail-section nearby-section">
+        <h3>${escapeHtml(heading)}</h3>
+        <p>No nearby ${escapeHtml(entityType)} records found in the loaded catalog.</p>
+      </section>
+    `;
+  }
+
+  return `
+    <section class="detail-section nearby-section">
+      <h3>${escapeHtml(heading)}</h3>
+      <div class="nearby-list">
+        ${nearby.map(({ record: nearbyRecord, distance }) => `
+          <a href="${getRouteHref(nearbyRecord)}" data-id="${nearbyRecord.id}">
+            <strong>${escapeHtml(nearbyRecord.code)}</strong>
+            <span>${escapeHtml(nearbyRecord.location || nearbyRecord.name || nearbyRecord.country || "")}</span>
+            <small>${Math.round(distance).toLocaleString()} NM</small>
+          </a>
+        `).join("")}
+      </div>
+    </section>
+  `;
+}
+
+function ensureNearbyData(record) {
+  if (!record || !Number.isFinite(record.latDecimal) || !Number.isFinite(record.lonDecimal)) return;
+  if (!parseRoute()) return;
+  if (isCatalogFullyLoaded() || nearbyLoadPromise) return;
+
+  nearbyLoadPromise = loadAllCatalogData()
+    .catch(() => {
+      dataLoadMessage = "nearby catalog load failed";
+    })
+    .finally(() => {
+      nearbyLoadPromise = null;
+      renderResults();
+    });
+}
+
 function renderDetail() {
   const record = records.find((entry) => entry.id === selectedId);
 
@@ -336,65 +498,85 @@ function renderDetail() {
     return;
   }
 
+  document.title = `${record.code} ${record.entityType} | Fixipedia`;
+  ensureNearbyData(record);
+
   detailPanel.innerHTML = `
     <div class="detail-hero detail-${record.entityType}">
       <div class="detail-topline">
-        <span>${record.facilityType}</span>
-        <span class="tag ${record.confidence}">${titleCase(record.confidence)}</span>
+        <span>${escapeHtml(record.facilityType)}</span>
+        <span class="tag ${record.confidence}">${escapeHtml(titleCase(record.confidence))}</span>
       </div>
-      <div class="detail-code">${record.code}</div>
-      <p class="detail-subtitle">${record.name} / ${record.location}</p>
+      <div class="detail-code">${escapeHtml(record.code)}</div>
+      <p class="detail-subtitle">${escapeHtml(record.name)} / ${escapeHtml(record.location)}</p>
     </div>
     <div class="detail-body">
+      <div class="detail-actions">
+        <a class="secondary-button" href="#archive">Back to search</a>
+        <a class="primary-button" href="#submit" data-use-record="${record.id}">Submit name origin</a>
+      </div>
+
       <div class="fact-grid catalog-facts">
         <div class="fact">
           <span>Type</span>
-          <strong>${titleCase(record.entityType)}</strong>
+          <strong>${escapeHtml(titleCase(record.entityType))}</strong>
         </div>
         <div class="fact">
           <span>Country</span>
-          <strong>${record.country || "N/A"}</strong>
+          <strong>${escapeHtml(record.country || "N/A")}</strong>
         </div>
         <div class="fact">
           <span>Status</span>
-          <strong>${record.status || "N/A"}</strong>
+          <strong>${escapeHtml(record.status || "N/A")}</strong>
         </div>
         <div class="fact">
           <span>Latitude</span>
-          <strong>${record.latitude || "N/A"}</strong>
+          <strong>${escapeHtml(record.latitude || "N/A")}</strong>
         </div>
         <div class="fact">
           <span>Longitude</span>
-          <strong>${record.longitude || "N/A"}</strong>
+          <strong>${escapeHtml(record.longitude || "N/A")}</strong>
         </div>
         <div class="fact">
           <span>Elevation / Frequency</span>
-          <strong>${record.frequency || record.elevation || "N/A"}</strong>
+          <strong>${escapeHtml(record.frequency || record.elevation || "N/A")}</strong>
+        </div>
+        <div class="fact">
+          <span>Chart Use</span>
+          <strong>${escapeHtml(record.chartUse || "N/A")}</strong>
+        </div>
+        <div class="fact">
+          <span>Decimal Latitude</span>
+          <strong>${Number.isFinite(record.latDecimal) ? record.latDecimal.toFixed(6) : "N/A"}</strong>
+        </div>
+        <div class="fact">
+          <span>Decimal Longitude</span>
+          <strong>${Number.isFinite(record.lonDecimal) ? record.lonDecimal.toFixed(6) : "N/A"}</strong>
         </div>
       </div>
 
       <section class="detail-section callout-section">
         <h3>Named After</h3>
-        <p>${record.namedAfter}</p>
+        <p>${escapeHtml(record.namedAfter)}</p>
       </section>
 
       <section class="detail-section">
         <h3>Fixipedia Note</h3>
-        <p>${record.archiveNote}</p>
+        <p>${escapeHtml(record.archiveNote)}</p>
       </section>
 
       <section class="detail-section split-section">
         <div>
           <h3>Evidence Trail</h3>
           <ul>
-            ${(record.evidence ?? []).map((item) => `<li>${item}</li>`).join("")}
+            ${(record.evidence ?? []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
           </ul>
         </div>
         <div>
           <h3>Catalog Identifiers</h3>
           <div class="related-list">
-            <span>${record.code}</span>
-            ${(record.alternateCodes ?? []).filter((item) => item !== record.code).map((item) => `<span>${item}</span>`).join("")}
+            <span>${escapeHtml(record.code)}</span>
+            ${(record.alternateCodes ?? []).filter((item) => item !== record.code).map((item) => `<span>${escapeHtml(item)}</span>`).join("")}
           </div>
         </div>
       </section>
@@ -403,14 +585,27 @@ function renderDetail() {
         <div>
           <h3>Source Leads</h3>
           <ul>
-            ${(record.sources ?? []).map((item) => `<li>${item}</li>`).join("")}
+            ${(record.sources ?? []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
           </ul>
         </div>
         <div>
           <h3>Open Research</h3>
-          <p>${record.openQuestions}</p>
+          <p>${escapeHtml(record.openQuestions)}</p>
         </div>
       </section>
+
+      <section class="detail-section">
+        <h3>Other Ways To Find This Page</h3>
+        <div class="related-list">
+          <span>${escapeHtml(getRoutePath(record))}</span>
+          <span>${escapeHtml(`${record.entityType} ${record.code}`)}</span>
+          <span>${escapeHtml(`${record.code} ${record.country || ""}`.trim())}</span>
+        </div>
+      </section>
+
+      ${renderNearbySection(record, "waypoint", `Waypoints near ${record.code}`)}
+      ${renderNearbySection(record, "airport", `Airports near ${record.code}`)}
+      ${renderNearbySection(record, "navaid", `Navaids near ${record.code}`)}
     </div>
   `;
 
@@ -442,22 +637,39 @@ function renderRecentResearch() {
 resultsList.addEventListener("click", (event) => {
   const card = event.target.closest("[data-id]");
   if (!card) return;
+  event.preventDefault();
 
-  selectedId = card.dataset.id;
-  renderResults();
+  const record = records.find((entry) => entry.id === card.dataset.id);
+  setSelectedRecord(record, { pushRoute: true });
+});
+
+detailPanel.addEventListener("click", (event) => {
+  const useRecordAction = event.target.closest("[data-use-record]");
+  if (useRecordAction) {
+    const record = records.find((entry) => entry.id === useRecordAction.dataset.useRecord);
+    fillSubmissionForm(record);
+    submissionStatus.textContent = record ? `Selected ${record.code} for submission.` : "";
+    return;
+  }
+
+  const linkedRecord = event.target.closest("[data-id]");
+  if (!linkedRecord) return;
+
+  const record = records.find((entry) => entry.id === linkedRecord.dataset.id);
+  if (!record) return;
+
+  event.preventDefault();
+  setSelectedRecord(record, { pushRoute: true, syncSearch: true });
+  document.querySelector("#archive")?.scrollIntoView({ behavior: "smooth", block: "start" });
 });
 
 recentResearchList?.addEventListener("click", (event) => {
   const item = event.target.closest("[data-id]");
   if (!item) return;
+  event.preventDefault();
 
-  selectedId = item.dataset.id;
-  searchInput.value = records.find((record) => record.id === selectedId)?.code ?? "";
-  activeFilter = "all";
-  filterButtons.forEach((filterButton) => {
-    filterButton.classList.toggle("active", filterButton.dataset.filter === "all");
-  });
-  renderResults();
+  const record = records.find((entry) => entry.id === item.dataset.id);
+  setSelectedRecord(record, { pushRoute: true, syncSearch: true });
   document.querySelector("#archive")?.scrollIntoView({ behavior: "smooth", block: "start" });
 });
 
@@ -485,6 +697,62 @@ filterButtons.forEach((button) => {
       renderResults();
     });
   });
+});
+
+async function openRouteFromLocation(options = {}) {
+  const route = parseRoute();
+  if (!route) {
+    if (window.location.pathname !== "/" && window.location.pathname !== "/index.html") {
+      detailPanel.innerHTML = `
+        <div class="detail-body">
+          <div class="detail-section">
+            <h3>Page not found</h3>
+            <p>No Fixipedia record route matched this address. Use search to find the catalog record.</p>
+          </div>
+        </div>
+      `;
+    }
+    return;
+  }
+
+  activeFilter = route.entity;
+  searchInput.value = route.code;
+  filterButtons.forEach((filterButton) => {
+    filterButton.classList.toggle("active", filterButton.dataset.filter === route.entity);
+  });
+
+  dataLoadMessage = `loading ${route.entity} data`;
+  renderResults();
+
+  try {
+    await loadEntity(route.entity);
+    const record = findRecordByRoute(route);
+
+    if (!record) {
+      dataLoadMessage = "";
+      resultCount.textContent = `No ${route.entity} record found for ${route.code}`;
+      detailPanel.innerHTML = `
+        <div class="detail-body">
+          <div class="detail-section">
+            <h3>No record found</h3>
+            <p>Fixipedia could not find ${escapeHtml(route.code)} in the loaded ${escapeHtml(route.entity)} catalog.</p>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    dataLoadMessage = "";
+    setSelectedRecord(record, { pushRoute: false });
+    if (options.scroll) document.querySelector("#archive")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (error) {
+    dataLoadMessage = "catalog load failed";
+    renderResults();
+  }
+}
+
+window.addEventListener("popstate", () => {
+  openRouteFromLocation({ scroll: true });
 });
 
 function fillSubmissionForm(record) {
@@ -616,3 +884,4 @@ submissionForm?.addEventListener("submit", async (event) => {
 
 renderCatalogSummary();
 renderResults();
+openRouteFromLocation();

@@ -9,6 +9,7 @@ The repository root is the deploy package. Upload or publish this folder directl
 - `index.html`
 - `styles.css`
 - `app.js`
+- `netlify.toml`
 - `data/nasr-meta.js`
 - `data/nasr-manifest.js`
 - `data/fixipedia-notes.js`
@@ -17,6 +18,16 @@ The repository root is the deploy package. Upload or publish this folder directl
 - `waypoint-data/nasr-waypoints-*.js`
 
 These are the only generated NASR browser bundles the site currently loads. The app loads the small metadata, reviewed notes, and navaid files up front, then lazy-loads airport and waypoint chunks when search or filters need them.
+
+## OpenNav-Style Record Pages
+
+Fixipedia supports shareable catalog pages such as:
+
+- `/waypoint/US/MANDD`
+- `/airport/KORD`
+- `/navaid/US/ORD`
+
+On Netlify, `netlify.toml` rewrites those clean URLs back to `index.html`, and the browser app loads the matching NASR record. If you publish somewhere other than Netlify, add equivalent rewrites for `/airport/*`, `/waypoint/*`, and `/navaid/*` to serve `index.html`.
 
 ## Ignored Local Data
 
