@@ -66,16 +66,22 @@ a {
 
 .brand-mark {
   align-items: center;
-  background: linear-gradient(135deg, var(--steel-dark) 0 66%, var(--orange) 66% 100%);
+  background: #fff;
+  border: 1px solid var(--line);
   border-radius: 8px;
-  color: #fff;
   display: inline-flex;
-  font-size: 0.82rem;
-  font-weight: 800;
-  height: 38px;
+  height: 44px;
   justify-content: center;
-  letter-spacing: 0;
-  width: 38px;
+  overflow: hidden;
+  padding: 4px;
+  width: 44px;
+}
+
+.brand-mark img {
+  display: block;
+  height: 100%;
+  object-fit: contain;
+  width: 100%;
 }
 
 .brand strong,
