@@ -54,9 +54,9 @@ The importer writes the NASR deploy files listed above and removes known stale g
 
 The raw FAA subscription files are ignored because they are large and not needed by the browser.
 
-## Notes
+## Submission Review Queue
 
-The submission form opens a prefilled GitHub Issue. After creating your GitHub repo, update `GITHUB_ISSUE_URL` near the top of `app.js`:
+The public `Submit an Origin` form is the contributor-facing UI. It opens a structured review item in GitHub Issues so maintainers can moderate submissions without making GitHub the primary website experience. After creating your GitHub repo, update `GITHUB_ISSUE_URL` near the top of `app.js`:
 
 ```js
 const GITHUB_ISSUE_URL = "https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/issues/new";

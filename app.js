@@ -28,7 +28,7 @@ const demoRecords = [
   }
 ];
 
-const GITHUB_ISSUE_URL = "https://github.com/npjfjn5y5w-netizen/fixopedia/issues/new";
+const GITHUB_ISSUE_URL = "https://github.com/npjfjn5y5w-netizen/Fixipedia/issues/new";
 
 const researchNotes = window.FIXIPEDIA_NOTES ?? {};
 const dataManifest = window.NASR_MANIFEST?.chunks ?? {};
@@ -528,7 +528,7 @@ function renderDetail() {
     <div class="detail-body">
       <div class="detail-actions">
         <a class="secondary-button" href="#archive">Back to search</a>
-        <a class="primary-button" href="#submit" data-use-record="${record.id}">Submit name origin</a>
+        <a class="primary-button" href="#submit" data-use-record="${record.id}">Submit origin</a>
       </div>
 
       <div class="fact-grid catalog-facts">
@@ -773,12 +773,15 @@ window.addEventListener("popstate", () => {
 function fillSubmissionForm(record) {
   if (!submissionForm || !record) return;
 
-  submissionForm.elements.code.value = record.code;
-  submissionForm.elements.namedAfter.value = record.namedAfter?.startsWith("Unknown.") ? "" : record.namedAfter;
-  submissionForm.elements.confidence.value = record.confidence ?? "unverified";
-  submissionForm.elements.evidence.value = (record.evidence ?? []).join("\n");
-  submissionForm.elements.sources.value = (record.sources ?? []).join("\n");
-  submissionForm.elements.openQuestions.value = record.openQuestions ?? "";
+  submissionForm.elements.state.value = record.state || "";
+  submissionForm.elements.airport.value = record.entityType === "airport"
+    ? `${record.code} - ${record.name}`
+    : record.location || record.name || "";
+  submissionForm.elements.procedure.value = record.chartUse || record.facilityType || "";
+  submissionForm.elements.fixName.value = record.code;
+  submissionForm.elements.originStory.value = record.namedAfter?.startsWith("Unknown.") ? "" : record.namedAfter;
+  submissionForm.elements.sourceCitation.value = (record.sources ?? []).join("\n");
+  submissionForm.elements.notes.value = record.openQuestions ?? "";
 }
 
 function getSelectedRecord() {
@@ -786,8 +789,9 @@ function getSelectedRecord() {
 }
 
 useSelectedRecordButton?.addEventListener("click", () => {
-  fillSubmissionForm(getSelectedRecord());
-  submissionStatus.textContent = "Selected record loaded.";
+  const record = getSelectedRecord();
+  fillSubmissionForm(record);
+  submissionStatus.textContent = record ? "Selected record loaded." : "Search and select a record first.";
 });
 
 function splitLines(value) {
@@ -801,39 +805,74 @@ function formatMarkdownList(items, fallback = "Not provided.") {
   return items.length ? items.map((item) => `- ${item}`).join("\n") : fallback;
 }
 
-function buildIssueUrl(record, submission) {
-  const title = `Name origin submission: ${record.code}`;
-  const body = [
-    "## Identifier",
-    record.code,
-    "",
-    "## Submitted name origin",
-    submission.namedAfter,
-    "",
-    "## Submitted confidence",
-    titleCase(submission.confidence),
-    "",
-    "## Evidence",
-    formatMarkdownList(submission.evidence),
-    "",
-    "## Source links or citations",
-    formatMarkdownList(submission.sources),
-    "",
-    "## Open questions",
-    submission.openQuestions || "Not provided.",
-    "",
-    "## NASR catalog context",
+function findSubmissionRecord(submission) {
+  const fixName = normalize(submission.fixName).toUpperCase();
+  const airport = normalize(submission.airport).toUpperCase();
+  const selectedRecord = getSelectedRecord();
+
+  if (selectedRecord?.code?.toUpperCase() === fixName) return selectedRecord;
+
+  return records.find((record) => (
+    record.code?.toUpperCase() === fixName ||
+    record.alternateCodes?.some((code) => code.toUpperCase() === fixName) ||
+    (airport && `${record.code} ${record.name} ${record.location}`.toUpperCase().includes(airport))
+  )) ?? selectedRecord ?? null;
+}
+
+function renderRecordContext(record) {
+  if (!record) return "No matching catalog record was selected or found in the loaded catalog.";
+
+  return [
+    `- Identifier: ${record.code}`,
     `- Name: ${record.name}`,
     `- Type: ${record.facilityType}`,
     `- Location: ${record.location}`,
     `- Country: ${record.country || "N/A"}`,
+    `- State: ${record.state || "N/A"}`,
     `- Latitude: ${record.latitude || "N/A"}`,
-    `- Longitude: ${record.longitude || "N/A"}`,
+    `- Longitude: ${record.longitude || "N/A"}`
+  ].join("\n");
+}
+
+function buildIssueUrl(submission, record) {
+  const titleParts = [
+    submission.fixName,
+    submission.airport ? `at ${submission.airport}` : "",
+    submission.state ? `(${submission.state})` : ""
+  ].filter(Boolean);
+  const title = `Origin submission: ${titleParts.join(" ")}`;
+  const body = [
+    "## State",
+    submission.state,
+    "",
+    "## Airport",
+    submission.airport,
+    "",
+    "## Procedure",
+    submission.procedure || "Not provided.",
+    "",
+    "## Waypoint/Fix name",
+    submission.fixName,
+    "",
+    "## Origin story",
+    submission.originStory,
+    "",
+    "## Source/citation",
+    formatMarkdownList(splitLines(submission.sourceCitation)),
+    "",
+    "## Contributor name",
+    submission.contributorName || "Not provided.",
+    "",
+    "## Notes",
+    submission.notes || "Not provided.",
+    "",
+    "## Catalog context",
+    renderRecordContext(record),
     "",
     "## Reviewer checklist",
-    "- [ ] Confirm the identifier matches the intended NASR record",
-    "- [ ] Check every submitted source",
-    "- [ ] Confirm the confidence level",
+    "- [ ] Confirm the waypoint/fix matches the intended catalog record",
+    "- [ ] Check the submitted source/citation",
+    "- [ ] Determine the confidence level",
     "- [ ] Decide final archive wording",
     "- [ ] Add approved wording to Fixipedia notes"
   ].join("\n");
@@ -841,7 +880,7 @@ function buildIssueUrl(record, submission) {
   const url = new URL(GITHUB_ISSUE_URL);
   url.searchParams.set("title", title);
   url.searchParams.set("body", body);
-  url.searchParams.set("labels", "name-origin-submission");
+  url.searchParams.set("labels", "origin-submission,review-queue");
   return url.toString();
 }
 
@@ -849,52 +888,42 @@ submissionForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   const formData = new FormData(submissionForm);
-  const code = normalize(formData.get("code")).toUpperCase();
-  await loadAllCatalogData();
-  const selectedRecord = getSelectedRecord();
-  const matchingRecord = selectedRecord?.code === code
-    ? selectedRecord
-    : records.find((record) => record.code === code);
+  const submission = {
+    state: String(formData.get("state") ?? "").trim(),
+    airport: String(formData.get("airport") ?? "").trim(),
+    procedure: String(formData.get("procedure") ?? "").trim(),
+    fixName: String(formData.get("fixName") ?? "").trim().toUpperCase(),
+    originStory: String(formData.get("originStory") ?? "").trim(),
+    sourceCitation: String(formData.get("sourceCitation") ?? "").trim(),
+    contributorName: String(formData.get("contributorName") ?? "").trim(),
+    notes: String(formData.get("notes") ?? "").trim()
+  };
 
-  if (!matchingRecord) {
-    submissionStatus.textContent = "No NASR record found for that identifier.";
+  if (!submission.state || !submission.airport || !submission.fixName) {
+    submissionStatus.textContent = "Add the state, airport, and waypoint/fix name.";
     return;
   }
 
-  const namedAfter = String(formData.get("namedAfter") ?? "").trim();
-  const confidence = String(formData.get("confidence") ?? "unverified").trim();
-  const evidence = splitLines(formData.get("evidence"));
-  const sources = splitLines(formData.get("sources"));
-  const openQuestions = String(formData.get("openQuestions") ?? "").trim();
-
-  if (!namedAfter) {
-    submissionStatus.textContent = "Add who or what the name is after.";
+  if (!submission.originStory) {
+    submissionStatus.textContent = "Add the origin story.";
     return;
   }
 
-  if (!evidence.length) {
-    submissionStatus.textContent = "Add the evidence for this name origin.";
-    return;
-  }
-
-  if (!sources.length) {
-    submissionStatus.textContent = "Add at least one source link or citation.";
+  if (!submission.sourceCitation) {
+    submissionStatus.textContent = "Add at least one source or citation.";
     return;
   }
 
   if (GITHUB_ISSUE_URL.includes("YOUR_USERNAME") || GITHUB_ISSUE_URL.includes("YOUR_REPOSITORY")) {
-    submissionStatus.textContent = "Set your GitHub Issues URL in app.js first.";
+    submissionStatus.textContent = "The review queue is not configured yet.";
     return;
   }
 
-  window.open(buildIssueUrl(matchingRecord, {
-    namedAfter,
-    confidence,
-    evidence,
-    sources,
-    openQuestions
-  }), "_blank", "noopener");
-  submissionStatus.textContent = `Opening GitHub issue for ${code}.`;
+  const matchingRecord = findSubmissionRecord(submission);
+  const opened = window.open(buildIssueUrl(submission, matchingRecord), "_blank", "noopener");
+  submissionStatus.textContent = opened
+    ? `Opening review draft for ${submission.fixName}.`
+    : "Allow popups to open the review draft.";
 });
 
 renderCatalogSummary();

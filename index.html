@@ -21,7 +21,7 @@
 
     <nav class="nav-links" aria-label="Primary navigation">
       <a href="#archive">Archive</a>
-      <a href="#submit">Submit a fix</a>
+      <a href="#submit">Submit an origin</a>
       <a href="#workflow">How it works</a>
       <a href="#standards">Source standards</a>
     </nav>
@@ -81,47 +81,53 @@
 
     <section class="submit-grid" id="submit">
       <div>
-        <p class="eyebrow">Submit a fix</p>
-        <h2>Add or update a name-origin note.</h2>
-        <p class="section-copy">Submissions open a prefilled GitHub Issue so each name-origin claim can be reviewed before it becomes part of the public archive.</p>
+        <p class="eyebrow">Submit an origin</p>
+        <h2>Share the story behind a waypoint or fix.</h2>
+        <p class="section-copy">Send a name-origin lead for maintainer review. Reviewed submissions can become public Fixipedia notes after the source is checked.</p>
       </div>
       <form class="submission-form" id="submissionForm">
         <label>
-          <span>Identifier</span>
-          <input id="submitCode" name="code" type="text" placeholder="KORD, BAWLL, CYY" required>
+          <span>State</span>
+          <input id="submitState" name="state" type="text" placeholder="AZ, Illinois, Ontario..." required>
         </label>
 
         <label>
-          <span>Named after</span>
-          <textarea id="submitNamedAfter" name="namedAfter" rows="3" placeholder="Who or what is this named after?" required></textarea>
+          <span>Airport</span>
+          <input id="submitAirport" name="airport" type="text" placeholder="KPHX, Phoenix Sky Harbor, O'Hare..." required>
         </label>
 
         <label>
-          <span>Confidence</span>
-          <select id="submitConfidence" name="confidence" required>
-            <option value="unverified">Unverified lead</option>
-            <option value="likely">Likely</option>
-            <option value="confirmed">Confirmed</option>
-          </select>
+          <span>Procedure</span>
+          <input id="submitProcedure" name="procedure" type="text" placeholder="Arrival, departure, approach, airway, unknown...">
         </label>
 
         <label>
-          <span>Evidence</span>
-          <textarea id="submitEvidence" name="evidence" rows="4" placeholder="What evidence connects this identifier or facility name to that origin?" required></textarea>
+          <span>Waypoint/Fix name</span>
+          <input id="submitFixName" name="fixName" type="text" placeholder="HYDRR, BAWLL, CYY..." required>
         </label>
 
         <label>
-          <span>Source links or citations</span>
-          <textarea id="submitSources" name="sources" rows="4" placeholder="Paste source URLs, book citations, chart references, or official documents." required></textarea>
+          <span>Origin story</span>
+          <textarea id="submitOriginStory" name="originStory" rows="4" placeholder="Who or what is the fix named after? What is the story?" required></textarea>
         </label>
 
         <label>
-          <span>Open questions</span>
-          <textarea id="submitOpenQuestions" name="openQuestions" rows="3" placeholder="What still needs to be checked before this becomes a reviewed Fixipedia note?"></textarea>
+          <span>Source/citation</span>
+          <textarea id="submitSourceCitation" name="sourceCitation" rows="4" placeholder="Paste links, document titles, chart references, book citations, or other evidence." required></textarea>
+        </label>
+
+        <label>
+          <span>Contributor name</span>
+          <input id="submitContributorName" name="contributorName" type="text" placeholder="Your name, handle, or organization">
+        </label>
+
+        <label>
+          <span>Notes</span>
+          <textarea id="submitNotes" name="notes" rows="3" placeholder="Anything maintainers should know while reviewing this submission?"></textarea>
         </label>
 
         <div class="form-actions">
-          <button class="primary-button" type="submit">Open GitHub issue</button>
+          <button class="primary-button" type="submit">Submit for review</button>
           <button class="secondary-button" id="useSelectedRecord" type="button">Use selected record</button>
           <span class="form-status" id="submissionStatus" role="status"></span>
         </div>
