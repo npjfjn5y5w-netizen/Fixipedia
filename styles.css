@@ -575,34 +575,43 @@ input[type="search"] {
 
 .nearby-section {
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 
 .nearby-list {
   display: grid;
-  gap: 8px;
-  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  gap: 0;
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-color: rgba(255, 102, 0, 0.52) var(--surface);
 }
 
 .nearby-list a {
+  align-items: center;
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 8px;
   display: grid;
-  gap: 5px;
-  min-height: 86px;
-  padding: 12px;
+  gap: 10px;
+  grid-template-columns: minmax(62px, 0.35fr) minmax(0, 1fr) auto;
+  min-height: 48px;
+  padding: 9px 11px;
+}
+
+.nearby-list a + a {
+  margin-top: 6px;
 }
 
 .nearby-list a:hover {
   border-color: var(--orange);
-  box-shadow: 0 10px 22px rgba(255, 102, 0, 0.11);
+  box-shadow: 0 6px 15px rgba(255, 102, 0, 0.1);
 }
 
 .nearby-list strong {
   color: var(--ink);
   font-family: var(--font-display);
-  font-size: 1.05rem;
+  font-size: 0.98rem;
 }
 
 .nearby-list span,
@@ -614,6 +623,8 @@ input[type="search"] {
 
 .nearby-list small {
   font-weight: 800;
+  text-align: right;
+  white-space: nowrap;
 }
 
 .workflow-band h2,
@@ -872,5 +883,14 @@ input[type="search"] {
   .detail-hero {
     min-height: 230px;
     padding: 22px;
+  }
+
+  .nearby-list a {
+    grid-template-columns: minmax(56px, 0.35fr) minmax(0, 1fr);
+  }
+
+  .nearby-list small {
+    grid-column: 2;
+    text-align: left;
   }
 }
