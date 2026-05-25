@@ -36,6 +36,7 @@ body {
   background-size: 48px 48px;
   color: var(--ink);
   font-family: var(--font-body);
+  overflow-x: hidden;
 }
 
 a {
@@ -857,6 +858,7 @@ input[type="search"] {
 
   .workspace {
     align-items: start;
+    min-width: 0;
   }
 
   .search-panel,
@@ -871,8 +873,10 @@ input[type="search"] {
   .search-panel {
     gap: 0;
     min-height: 0;
+    min-width: 0;
     position: sticky;
     top: 0;
+    width: 100%;
     z-index: 8;
   }
 
@@ -892,6 +896,7 @@ input[type="search"] {
     display: flex;
     gap: 7px;
     margin-top: 10px;
+    max-width: 100%;
     overflow-x: auto;
     padding-bottom: 2px;
     scrollbar-width: none;
@@ -921,6 +926,7 @@ input[type="search"] {
 
   .results-list {
     max-height: min(46vh, 360px);
+    max-width: 100%;
     padding-right: 0;
   }
 
