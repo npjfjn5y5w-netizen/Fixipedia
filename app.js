@@ -108,6 +108,7 @@ let nearbyLoadPromise = null;
 let mobileMode = "search";
 
 const routeEntities = new Set(["airport", "waypoint", "navaid"]);
+const pageRoutes = new Set(["thank-you"]);
 
 function getAssetPath(source) {
   if (/^(?:[a-z]+:)?\/\//i.test(source) || source.startsWith("/")) return source;
@@ -182,7 +183,9 @@ function parseRoute() {
   const path = hashPath || window.location.pathname;
   const parts = stripBasePathParts(path.split("/").filter(Boolean).map(decodeURIComponent));
 
-  if (!parts.length || !routeEntities.has(parts[0])) return null;
+  if (!parts.length) return null;
+  if (pageRoutes.has(parts[0])) return { entity: parts[0] };
+  if (!routeEntities.has(parts[0])) return null;
 
   const entity = parts[0];
   if (entity === "airport") {
@@ -330,7 +333,21 @@ function renderCatalogSummary() {
   if (navaidCount) navaidCount.textContent = (counts.navaids ?? 0).toLocaleString();
 }
 
+function setThankYouMode(isActive) {
+  document.body.classList.toggle("thank-you-mode", isActive);
+  if (isActive) {
+    document.title = "Thank you | Fixipedia";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+}
+
 function renderResults() {
+  if (parseRoute()?.entity === "thank-you") {
+    setThankYouMode(true);
+    return;
+  }
+
+  setThankYouMode(false);
   document.body.classList.toggle("mobile-search-mode", isMobileLayout() && mobileMode === "search");
   document.body.classList.toggle("mobile-detail-mode", isMobileLayout() && mobileMode === "detail");
 
@@ -781,6 +798,12 @@ filterButtons.forEach((button) => {
 
 async function openRouteFromLocation(options = {}) {
   const route = parseRoute();
+  if (route?.entity === "thank-you") {
+    setThankYouMode(true);
+    return;
+  }
+
+  setThankYouMode(false);
   if (!route) {
     if (!isHomePath(window.location.pathname)) {
       detailPanel.innerHTML = `
@@ -942,7 +965,8 @@ submissionForm?.addEventListener("submit", async (event) => {
 
     submissionForm.reset();
     applySubmissionCatalogContext(null);
-    submissionStatus.textContent = `Thanks. ${submission.fixName} was submitted for review.`;
+    history.pushState({}, "", getAppPath("/thank-you"));
+    setThankYouMode(true);
   } catch (error) {
     submissionStatus.textContent = "Submission failed. Please try again in a moment.";
   }
@@ -954,6 +978,12 @@ document.querySelectorAll("[data-asset-path]").forEach((element) => {
 });
 document.querySelectorAll(".brand").forEach((element) => {
   element.setAttribute("href", basePath);
+});
+document.querySelectorAll(".topbar .nav-links a[href^='#']").forEach((element) => {
+  element.setAttribute("href", `${basePath}${element.getAttribute("href")}`);
+});
+document.querySelectorAll("[data-home-anchor]").forEach((element) => {
+  element.setAttribute("href", `${basePath}#${element.dataset.homeAnchor}`);
 });
 renderResults();
 openRouteFromLocation();

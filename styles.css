@@ -152,7 +152,8 @@ main {
 .detail-panel,
 .workflow-band,
 .submit-grid,
-.standards {
+.standards,
+.thank-you-section {
   background: rgba(255, 255, 255, 0.88);
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -167,6 +168,7 @@ main {
 }
 
 .panel-heading h1,
+.thank-you-section h1,
 .workflow-band h2,
 .submit-grid h2,
 .standards h2 {
@@ -179,6 +181,11 @@ main {
 .panel-heading h1 {
   font-size: clamp(2.4rem, 6vw, 5rem);
   max-width: 900px;
+}
+
+.thank-you-section h1 {
+  font-size: clamp(2rem, 5vw, 4rem);
+  max-width: 720px;
 }
 
 .search-heading h2 {
@@ -659,6 +666,28 @@ input[type="search"] {
   padding: 28px;
 }
 
+.thank-you-section {
+  display: none;
+  margin: 22px auto 0;
+  max-width: 860px;
+  padding: 34px;
+}
+
+.thank-you-mode main > section:not(.thank-you-section) {
+  display: none;
+}
+
+.thank-you-mode .thank-you-section {
+  display: block;
+}
+
+.thank-you-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
 .workflow-grid {
   display: grid;
   gap: 12px;
@@ -895,6 +924,7 @@ input[type="search"] {
   .search-panel,
   .archive-hero,
   .detail-body,
+  .thank-you-section,
   .workflow-band,
   .submit-grid,
   .standards {

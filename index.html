@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fixipedia | Aviation Waypoint Names</title>
   <script>
-    window.FIXIPEDIA_ASSET_VERSION = "20260525-detail-cleanup";
+    window.FIXIPEDIA_ASSET_VERSION = "20260525-thank-you";
     window.FIXIPEDIA_BASE_PATH = (() => {
       const pathParts = window.location.pathname.split("/").filter(Boolean);
       return window.location.hostname.endsWith("github.io") && pathParts.length
@@ -156,6 +156,18 @@
         <div>
           <strong>Unverified</strong>
           <p>A useful lead that needs corroboration before being treated as fact.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="thank-you-section" id="thankYouPage" aria-labelledby="thank-you-title">
+      <div>
+        <p class="eyebrow">Submission received</p>
+        <h1 id="thank-you-title">Thanks for helping fill in the story.</h1>
+        <p class="intro">Your origin lead was submitted for review. If it checks out, it can become part of the public Fixipedia archive.</p>
+        <div class="thank-you-actions">
+          <a class="primary-button" href="#archive" data-home-anchor="archive">Search the archive</a>
+          <a class="secondary-button" href="#submit" data-home-anchor="submit">Submit another origin</a>
         </div>
       </div>
     </section>

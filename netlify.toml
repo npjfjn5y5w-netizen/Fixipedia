@@ -12,3 +12,8 @@ status = 200
 from = "/navaid/*"
 to = "/index.html"
 status = 200
+
+[[redirects]]
+from = "/thank-you"
+to = "/index.html"
+status = 200
