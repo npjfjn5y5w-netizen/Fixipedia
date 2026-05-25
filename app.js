@@ -63,7 +63,7 @@ function withResearchDefaults(record) {
   return {
     namedAfter: "Unknown. This record needs Fixipedia naming research.",
     confidence: "unverified",
-    archiveNote: "Imported from FAA NASR location data. Add a Fixipedia note to document the name origin.",
+    archiveNote: "Imported from FAA NASR location data.",
     evidence: ["FAA NASR 28 Day Subscription effective 2024/12/26."],
     nearby: [],
     sources: ["FAA NASR"],
@@ -610,10 +610,6 @@ function renderDetail() {
           <strong>${escapeHtml(record.country || "N/A")}</strong>
         </div>
         <div class="fact">
-          <span>Status</span>
-          <strong>${escapeHtml(record.status || "N/A")}</strong>
-        </div>
-        <div class="fact">
           <span>Latitude</span>
           <strong>${escapeHtml(record.latitude || "N/A")}</strong>
         </div>
@@ -629,14 +625,6 @@ function renderDetail() {
           <span>Chart Use</span>
           <strong>${escapeHtml(record.chartUse || "N/A")}</strong>
         </div>
-        <div class="fact">
-          <span>Decimal Latitude</span>
-          <strong>${Number.isFinite(record.latDecimal) ? record.latDecimal.toFixed(6) : "N/A"}</strong>
-        </div>
-        <div class="fact">
-          <span>Decimal Longitude</span>
-          <strong>${Number.isFinite(record.lonDecimal) ? record.lonDecimal.toFixed(6) : "N/A"}</strong>
-        </div>
       </div>
 
       <section class="detail-section callout-section">
@@ -649,19 +637,11 @@ function renderDetail() {
         <p>${escapeHtml(record.archiveNote)}</p>
       </section>
 
-      <section class="detail-section split-section">
-        <div>
-          <h3>Evidence Trail</h3>
-          <ul>
-            ${(record.evidence ?? []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
-          </ul>
-        </div>
-        <div>
-          <h3>Catalog Identifiers</h3>
-          <div class="related-list">
-            <span>${escapeHtml(record.code)}</span>
-            ${(record.alternateCodes ?? []).filter((item) => item !== record.code).map((item) => `<span>${escapeHtml(item)}</span>`).join("")}
-          </div>
+      <section class="detail-section">
+        <h3>Catalog Identifiers</h3>
+        <div class="related-list">
+          <span>${escapeHtml(record.code)}</span>
+          ${(record.alternateCodes ?? []).filter((item) => item !== record.code).map((item) => `<span>${escapeHtml(item)}</span>`).join("")}
         </div>
       </section>
 
@@ -673,7 +653,7 @@ function renderDetail() {
           </ul>
         </div>
         <div>
-          <h3>Open Research</h3>
+          <h3>Other sources</h3>
           <p>${escapeHtml(record.openQuestions)}</p>
         </div>
       </section>
