@@ -152,7 +152,6 @@ main {
 .detail-panel,
 .workflow-band,
 .submit-grid,
-.standards,
 .thank-you-section {
   background: rgba(255, 255, 255, 0.88);
   border: 1px solid var(--line);
@@ -170,8 +169,7 @@ main {
 .panel-heading h1,
 .thank-you-section h1,
 .workflow-band h2,
-.submit-grid h2,
-.standards h2 {
+.submit-grid h2 {
   font-family: var(--font-display);
   letter-spacing: 0;
   line-height: 1.05;
@@ -651,14 +649,12 @@ input[type="search"] {
 }
 
 .workflow-band h2,
-.submit-grid h2,
-.standards h2 {
+.submit-grid h2 {
   font-size: clamp(1.8rem, 4vw, 3.2rem);
 }
 
 .workflow-band,
-.submit-grid,
-.standards {
+.submit-grid {
   display: grid;
   gap: 26px;
   grid-template-columns: minmax(240px, 0.55fr) 1fr;
@@ -743,8 +739,7 @@ input[type="search"] {
 }
 
 .submission-form,
-.submission-checklist,
-.standards-grid {
+.submission-checklist {
   display: grid;
   gap: 12px;
 }
@@ -753,8 +748,7 @@ input[type="search"] {
   display: none;
 }
 
-.submission-checklist div,
-.standards-grid div {
+.submission-checklist div {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -855,28 +849,21 @@ input[type="search"] {
   display: block;
 }
 
-.submission-checklist strong,
-.standards-grid strong {
+.submission-checklist strong {
   font-size: 1rem;
 }
 
-.submission-checklist span,
-.standards-grid p {
+.submission-checklist span {
   color: var(--muted);
   line-height: 1.5;
   margin: 8px 0 0;
-}
-
-.standards-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 @media (max-width: 980px) {
   .archive-hero,
   .workspace,
   .workflow-band,
-  .submit-grid,
-  .standards {
+  .submit-grid {
     grid-template-columns: 1fr;
   }
 
@@ -926,8 +913,7 @@ input[type="search"] {
   .detail-body,
   .thank-you-section,
   .workflow-band,
-  .submit-grid,
-  .standards {
+  .submit-grid {
     padding: 18px;
   }
 
@@ -1038,8 +1024,7 @@ input[type="search"] {
   .form-row,
   .catalog-summary,
   .workflow-grid,
-  .submission-checklist,
-  .standards-grid {
+  .submission-checklist {
     grid-template-columns: 1fr;
   }
 
