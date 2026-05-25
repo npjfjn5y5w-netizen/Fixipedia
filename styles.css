@@ -849,7 +849,15 @@ input[type="search"] {
   }
 
   .nav-links {
-    flex-wrap: wrap;
+    display: grid;
+    gap: 0;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .nav-links a {
+    font-size: 0.84rem;
+    text-align: center;
   }
 
   main {
