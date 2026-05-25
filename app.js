@@ -600,6 +600,11 @@ function renderDetail() {
         <a class="primary-button" href="#submit" data-use-record="${record.id}">Submit origin</a>
       </div>
 
+      <section class="detail-section callout-section">
+        <h3>Named After</h3>
+        <p>${escapeHtml(record.namedAfter)}</p>
+      </section>
+
       <div class="fact-grid catalog-facts">
         <div class="fact">
           <span>Type</span>
@@ -626,11 +631,6 @@ function renderDetail() {
           <strong>${escapeHtml(record.chartUse || "N/A")}</strong>
         </div>
       </div>
-
-      <section class="detail-section callout-section">
-        <h3>Named After</h3>
-        <p>${escapeHtml(record.namedAfter)}</p>
-      </section>
 
       <section class="detail-section">
         <h3>Fixipedia Note</h3>
