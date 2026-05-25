@@ -96,7 +96,6 @@ const filterButtons = Array.from(document.querySelectorAll(".filter-button"));
 const archiveMeta = document.querySelector(".archive-meta span:last-child");
 const submissionForm = document.querySelector("#submissionForm");
 const submissionStatus = document.querySelector("#submissionStatus");
-const useSelectedRecordButton = document.querySelector("#useSelectedRecord");
 const recentResearchList = document.querySelector("#recentResearchList");
 const catalogTotal = document.querySelector("#catalogTotal");
 const airportCount = document.querySelector("#airportCount");
@@ -886,12 +885,6 @@ function fillSubmissionForm(record) {
 function getSelectedRecord() {
   return records.find((record) => record.id === selectedId);
 }
-
-useSelectedRecordButton?.addEventListener("click", () => {
-  const record = getSelectedRecord();
-  fillSubmissionForm(record);
-  submissionStatus.textContent = record ? "Selected record loaded." : "Search and select a record first.";
-});
 
 function findSubmissionRecord(submission) {
   const fixName = normalize(submission.fixName).toUpperCase();
