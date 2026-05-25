@@ -874,14 +874,12 @@ if (mobileMedia.addEventListener) {
 function fillSubmissionForm(record) {
   if (!submissionForm || !record) return;
 
-  submissionForm.elements.state.value = record.state || "";
   submissionForm.elements.airport.value = record.entityType === "airport"
     ? `${record.code} - ${record.name}`
     : record.location || record.name || "";
   submissionForm.elements.procedure.value = record.chartUse || record.facilityType || "";
   submissionForm.elements.fixName.value = record.code;
   submissionForm.elements.originStory.value = record.namedAfter?.startsWith("Unknown.") ? "" : record.namedAfter;
-  submissionForm.elements.sourceCitation.value = (record.sources ?? []).join("\n");
   submissionForm.elements.notes.value = record.openQuestions ?? "";
 }
 
@@ -894,17 +892,6 @@ useSelectedRecordButton?.addEventListener("click", () => {
   fillSubmissionForm(record);
   submissionStatus.textContent = record ? "Selected record loaded." : "Search and select a record first.";
 });
-
-function splitLines(value) {
-  return String(value ?? "")
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter(Boolean);
-}
-
-function formatMarkdownList(items, fallback = "Not provided.") {
-  return items.length ? items.map((item) => `- ${item}`).join("\n") : fallback;
-}
 
 function findSubmissionRecord(submission) {
   const fixName = normalize(submission.fixName).toUpperCase();
@@ -938,16 +925,12 @@ function renderRecordContext(record) {
 function buildIssueUrl(submission, record) {
   const titleParts = [
     submission.fixName,
-    submission.airport ? `at ${submission.airport}` : "",
-    submission.state ? `(${submission.state})` : ""
+    submission.airport ? `at ${submission.airport}` : ""
   ].filter(Boolean);
   const title = `Origin submission: ${titleParts.join(" ")}`;
   const body = [
-    "## State",
-    submission.state,
-    "",
     "## Airport",
-    submission.airport,
+    submission.airport || "Not provided.",
     "",
     "## Procedure",
     submission.procedure || "Not provided.",
@@ -957,12 +940,6 @@ function buildIssueUrl(submission, record) {
     "",
     "## Origin story",
     submission.originStory,
-    "",
-    "## Source/citation",
-    formatMarkdownList(splitLines(submission.sourceCitation)),
-    "",
-    "## Contributor name",
-    submission.contributorName || "Not provided.",
     "",
     "## Notes",
     submission.notes || "Not provided.",
@@ -990,28 +967,20 @@ submissionForm?.addEventListener("submit", async (event) => {
 
   const formData = new FormData(submissionForm);
   const submission = {
-    state: String(formData.get("state") ?? "").trim(),
     airport: String(formData.get("airport") ?? "").trim(),
     procedure: String(formData.get("procedure") ?? "").trim(),
     fixName: String(formData.get("fixName") ?? "").trim().toUpperCase(),
     originStory: String(formData.get("originStory") ?? "").trim(),
-    sourceCitation: String(formData.get("sourceCitation") ?? "").trim(),
-    contributorName: String(formData.get("contributorName") ?? "").trim(),
     notes: String(formData.get("notes") ?? "").trim()
   };
 
-  if (!submission.state || !submission.airport || !submission.fixName) {
-    submissionStatus.textContent = "Add the state, airport, and waypoint/fix name.";
+  if (!submission.fixName) {
+    submissionStatus.textContent = "Add the waypoint/fix name.";
     return;
   }
 
   if (!submission.originStory) {
     submissionStatus.textContent = "Add the origin story.";
-    return;
-  }
-
-  if (!submission.sourceCitation) {
-    submissionStatus.textContent = "Add at least one source or citation.";
     return;
   }
 

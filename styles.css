@@ -744,6 +744,12 @@ input[type="search"] {
   text-transform: uppercase;
 }
 
+.submission-form label small {
+  color: var(--orange-dark);
+  font-size: 0.68rem;
+  margin-left: 4px;
+}
+
 .submission-form input,
 .submission-form select,
 .submission-form textarea {
