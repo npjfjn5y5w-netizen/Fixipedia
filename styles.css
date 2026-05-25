@@ -657,7 +657,6 @@ input[type="search"] {
 }
 
 .workflow-band,
-.about-band,
 .submit-grid {
   display: grid;
   gap: 26px;
@@ -666,8 +665,29 @@ input[type="search"] {
   padding: 28px;
 }
 
-.about-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+.about-band {
+  display: grid;
+  gap: 26px;
+  grid-template-columns: minmax(240px, 0.55fr) 1fr;
+  margin-top: 34px;
+  padding: 34px;
+}
+
+.about-copy {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 14px;
+  max-width: 820px;
+  padding: 20px;
+}
+
+.about-copy p {
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.62;
+  margin: 0;
 }
 
 .thank-you-section {
