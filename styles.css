@@ -893,24 +893,20 @@ input[type="search"] {
   }
 
   .filter-row {
-    display: flex;
+    display: grid;
     gap: 7px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     margin-top: 10px;
     max-width: 100%;
-    overflow-x: auto;
-    padding-bottom: 2px;
-    scrollbar-width: none;
-  }
-
-  .filter-row::-webkit-scrollbar {
-    display: none;
   }
 
   .filter-button {
-    flex: 0 0 auto;
     min-height: 36px;
-    min-width: 76px;
-    padding-inline: 12px;
+    padding-inline: 8px;
+  }
+
+  .filter-button[data-filter="navaid"] {
+    display: none;
   }
 
   .archive-meta {
