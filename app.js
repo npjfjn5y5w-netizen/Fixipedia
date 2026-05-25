@@ -226,16 +226,49 @@ function getSearchBlob(record) {
   ].join(" ");
 }
 
+function normalizeIdentifier(value) {
+  return normalize(value).replace(/[^a-z0-9]/g, "");
+}
+
+function getSearchScore(record, query) {
+  const normalizedQuery = normalizeIdentifier(query);
+  const code = normalizeIdentifier(record.code);
+  const alternateCodes = (record.alternateCodes ?? []).map(normalizeIdentifier);
+  const name = normalize(record.name);
+  const location = normalize(record.location);
+  const keywords = normalize((record.keywords ?? []).join(" "));
+  const blob = normalize(getSearchBlob(record));
+  let score = 0;
+
+  if (code === normalizedQuery) score += 120;
+  if (alternateCodes.includes(normalizedQuery)) score += 135;
+  if (record.entityType === "airport" && alternateCodes.includes(normalizedQuery)) score += 45;
+  if (code.startsWith(normalizedQuery)) score += 80;
+  if (alternateCodes.some((alternateCode) => alternateCode.startsWith(normalizedQuery))) score += 75;
+  if (name.includes(query)) score += 35;
+  if (location.includes(query)) score += 25;
+  if (keywords.includes(query)) score += 12;
+  if (query.length >= 4 && blob.includes(query)) score += 5;
+
+  if (score > 0 && record.entityType === "airport") score += 8;
+  if (score > 0 && record.entityType === "navaid") score += 4;
+
+  return score;
+}
+
 function getFilteredRecords() {
   const query = normalize(searchInput.value);
 
   if (!query) return [];
 
-  return records.filter((record) => {
-    const matchesFilter = activeFilter === "all" || record.entityType === activeFilter;
-    const matchesSearch = normalize(getSearchBlob(record)).includes(query);
-    return matchesFilter && matchesSearch;
-  });
+  return records
+    .map((record, index) => ({ record, index, score: getSearchScore(record, query) }))
+    .filter(({ record, score }) => {
+      const matchesFilter = activeFilter === "all" || record.entityType === activeFilter;
+      return matchesFilter && score > 0;
+    })
+    .sort((a, b) => b.score - a.score || a.index - b.index)
+    .map(({ record }) => record);
 }
 
 function getLoadedCatalogCount() {
