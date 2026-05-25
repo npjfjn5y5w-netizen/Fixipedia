@@ -102,11 +102,13 @@ const catalogTotal = document.querySelector("#catalogTotal");
 const airportCount = document.querySelector("#airportCount");
 const waypointCount = document.querySelector("#waypointCount");
 const navaidCount = document.querySelector("#navaidCount");
+const mobileMedia = window.matchMedia("(max-width: 720px)");
 
 let activeFilter = "all";
 let selectedId = null;
 let visibleLimit = 5;
 let nearbyLoadPromise = null;
+let mobileMode = "search";
 
 const routeEntities = new Set(["airport", "waypoint", "navaid"]);
 
@@ -148,6 +150,10 @@ function normalize(value) {
 
 function hasSearchQuery() {
   return Boolean(normalize(searchInput.value));
+}
+
+function isMobileLayout() {
+  return mobileMedia.matches;
 }
 
 function titleCase(value) {
@@ -216,6 +222,9 @@ function setSelectedRecord(record, options = {}) {
   if (!record) return;
 
   selectedId = record.id;
+  if (isMobileLayout()) {
+    mobileMode = "detail";
+  }
   if (options.syncSearch) {
     searchInput.value = record.code;
     activeFilter = "all";
@@ -325,8 +334,14 @@ function renderCatalogSummary() {
 }
 
 function renderResults() {
+  document.body.classList.toggle("mobile-search-mode", isMobileLayout() && mobileMode === "search");
+  document.body.classList.toggle("mobile-detail-mode", isMobileLayout() && mobileMode === "detail");
+
   if (!hasSearchQuery()) {
     selectedId = null;
+    mobileMode = "search";
+    document.body.classList.toggle("mobile-search-mode", isMobileLayout());
+    document.body.classList.toggle("mobile-detail-mode", false);
     resultCount.textContent = dataLoadMessage || "Start typing to search the catalog";
     resultsList.innerHTML = "";
     updateArchiveMeta();
@@ -584,7 +599,7 @@ function renderDetail() {
     </div>
     <div class="detail-body">
       <div class="detail-actions">
-        <a class="secondary-button" href="#archive">Back to search</a>
+        <a class="secondary-button" href="#archive" data-back-to-results>Back to search</a>
         <a class="primary-button" href="#submit" data-use-record="${record.id}">Submit origin</a>
       </div>
 
@@ -713,9 +728,23 @@ resultsList.addEventListener("click", (event) => {
 
   const record = records.find((entry) => entry.id === card.dataset.id);
   setSelectedRecord(record, { pushRoute: true });
+  if (isMobileLayout()) {
+    searchInput.blur();
+    detailPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 });
 
 detailPanel.addEventListener("click", (event) => {
+  const backToResultsAction = event.target.closest("[data-back-to-results]");
+  if (backToResultsAction && isMobileLayout()) {
+    event.preventDefault();
+    mobileMode = "search";
+    renderResults();
+    document.querySelector("#archive")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    searchInput.focus({ preventScroll: true });
+    return;
+  }
+
   const useRecordAction = event.target.closest("[data-use-record]");
   if (useRecordAction) {
     const record = records.find((entry) => entry.id === useRecordAction.dataset.useRecord);
@@ -747,6 +776,7 @@ recentResearchList?.addEventListener("click", (event) => {
 
 searchInput.addEventListener("input", () => {
   visibleLimit = 5;
+  mobileMode = "search";
   renderResults();
   loadNeededData().catch(() => {
     dataLoadMessage = "catalog load failed";
@@ -758,6 +788,7 @@ filterButtons.forEach((button) => {
   button.addEventListener("click", () => {
     activeFilter = button.dataset.filter;
     visibleLimit = 5;
+    mobileMode = "search";
 
     filterButtons.forEach((filterButton) => {
       filterButton.classList.toggle("active", filterButton === button);
@@ -826,6 +857,19 @@ async function openRouteFromLocation(options = {}) {
 window.addEventListener("popstate", () => {
   openRouteFromLocation({ scroll: true });
 });
+
+function handleMobileLayoutChange() {
+  if (!isMobileLayout()) {
+    mobileMode = "search";
+  }
+  renderResults();
+}
+
+if (mobileMedia.addEventListener) {
+  mobileMedia.addEventListener("change", handleMobileLayoutChange);
+} else {
+  mobileMedia.addListener(handleMobileLayoutChange);
+}
 
 function fillSubmissionForm(record) {
   if (!submissionForm || !record) return;

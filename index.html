@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fixipedia | Aviation Waypoint Names</title>
   <script>
+    window.FIXIPEDIA_ASSET_VERSION = "20260524-mobile-search";
     window.FIXIPEDIA_BASE_PATH = (() => {
       const pathParts = window.location.pathname.split("/").filter(Boolean);
       return window.location.hostname.endsWith("github.io") && pathParts.length
@@ -12,7 +13,7 @@
         : "/";
     })();
     document.write(`<link rel="icon" href="${window.FIXIPEDIA_BASE_PATH}assets/fixipedia-mark.jpg">`);
-    document.write(`<link rel="stylesheet" href="${window.FIXIPEDIA_BASE_PATH}styles.css">`);
+    document.write(`<link rel="stylesheet" href="${window.FIXIPEDIA_BASE_PATH}styles.css?v=${window.FIXIPEDIA_ASSET_VERSION}">`);
   </script>
   <noscript>
     <link rel="icon" href="/assets/fixipedia-mark.jpg">
@@ -201,7 +202,7 @@
       "data/nasr-navaids.js",
       "app.js"
     ].forEach((source) => {
-      document.write(`<script src="${window.FIXIPEDIA_BASE_PATH}${source}"><\/script>`);
+      document.write(`<script src="${window.FIXIPEDIA_BASE_PATH}${source}?v=${window.FIXIPEDIA_ASSET_VERSION}"><\/script>`);
     });
   </script>
 </body>
