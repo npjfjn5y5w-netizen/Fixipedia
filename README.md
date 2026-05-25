@@ -56,10 +56,8 @@ The raw FAA subscription files are ignored because they are large and not needed
 
 ## Submission Review Queue
 
-The public `Submit an Origin` form is the contributor-facing UI. It opens a structured review item in GitHub Issues so maintainers can moderate submissions without making GitHub the primary website experience. After creating your GitHub repo, update `GITHUB_ISSUE_URL` near the top of `app.js`:
+The public `Submit an Origin` form is the contributor-facing UI. It uses Netlify Forms under the `origin-submission` form name so maintainers can review submissions from the Netlify Forms dashboard without sending contributors to GitHub.
 
-```js
-const GITHUB_ISSUE_URL = "https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/issues/new";
-```
+Enable form detection in Netlify, then configure submission notifications in the Netlify project settings if email alerts are desired. The browser submit handler posts the static form payload to Netlify and includes hidden catalog context when the submitted fix can be matched to a loaded NASR record.
 
 Approved name-origin notes should be added to `data/fixipedia-notes.js`, then committed and redeployed.

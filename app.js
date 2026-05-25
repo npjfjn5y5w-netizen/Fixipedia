@@ -28,8 +28,6 @@ const demoRecords = [
   }
 ];
 
-const GITHUB_ISSUE_URL = "https://github.com/npjfjn5y5w-netizen/Fixipedia/issues/new";
-
 const researchNotes = window.FIXIPEDIA_NOTES ?? {};
 const dataManifest = window.NASR_MANIFEST?.chunks ?? {};
 const basePath = window.FIXIPEDIA_BASE_PATH || "/";
@@ -915,44 +913,14 @@ function renderRecordContext(record) {
   ].join("\n");
 }
 
-function buildIssueUrl(submission, record) {
-  const titleParts = [
-    submission.fixName,
-    submission.airport ? `at ${submission.airport}` : ""
-  ].filter(Boolean);
-  const title = `Origin submission: ${titleParts.join(" ")}`;
-  const body = [
-    "## Airport",
-    submission.airport || "Not provided.",
-    "",
-    "## Procedure",
-    submission.procedure || "Not provided.",
-    "",
-    "## Waypoint/Fix name",
-    submission.fixName,
-    "",
-    "## Origin story",
-    submission.originStory,
-    "",
-    "## Notes",
-    submission.notes || "Not provided.",
-    "",
-    "## Catalog context",
-    renderRecordContext(record),
-    "",
-    "## Reviewer checklist",
-    "- [ ] Confirm the waypoint/fix matches the intended catalog record",
-    "- [ ] Check the submitted source/citation",
-    "- [ ] Determine the confidence level",
-    "- [ ] Decide final archive wording",
-    "- [ ] Add approved wording to Fixipedia notes"
-  ].join("\n");
+function applySubmissionCatalogContext(record) {
+  if (!submissionForm) return;
 
-  const url = new URL(GITHUB_ISSUE_URL);
-  url.searchParams.set("title", title);
-  url.searchParams.set("body", body);
-  url.searchParams.set("labels", "origin-submission,review-queue");
-  return url.toString();
+  submissionForm.elements.catalogIdentifier.value = record?.code || "";
+  submissionForm.elements.catalogName.value = record?.name || "";
+  submissionForm.elements.catalogType.value = record?.facilityType || record?.entityType || "";
+  submissionForm.elements.catalogLocation.value = record?.location || "";
+  submissionForm.elements.catalogContext.value = renderRecordContext(record);
 }
 
 submissionForm?.addEventListener("submit", async (event) => {
@@ -977,16 +945,27 @@ submissionForm?.addEventListener("submit", async (event) => {
     return;
   }
 
-  if (GITHUB_ISSUE_URL.includes("YOUR_USERNAME") || GITHUB_ISSUE_URL.includes("YOUR_REPOSITORY")) {
-    submissionStatus.textContent = "The review queue is not configured yet.";
-    return;
-  }
-
+  submissionForm.elements.fixName.value = submission.fixName;
   const matchingRecord = findSubmissionRecord(submission);
-  const opened = window.open(buildIssueUrl(submission, matchingRecord), "_blank", "noopener");
-  submissionStatus.textContent = opened
-    ? `Opening review draft for ${submission.fixName}.`
-    : "Allow popups to open the review draft.";
+  applySubmissionCatalogContext(matchingRecord);
+
+  submissionStatus.textContent = "Submitting...";
+
+  try {
+    const response = await fetch("/", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams(new FormData(submissionForm)).toString()
+    });
+
+    if (!response.ok) throw new Error(`Submission failed with ${response.status}`);
+
+    submissionForm.reset();
+    applySubmissionCatalogContext(null);
+    submissionStatus.textContent = `Thanks. ${submission.fixName} was submitted for review.`;
+  } catch (error) {
+    submissionStatus.textContent = "Submission failed. Please try again in a moment.";
+  }
 });
 
 renderCatalogSummary();

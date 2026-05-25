@@ -720,6 +720,10 @@ input[type="search"] {
   gap: 12px;
 }
 
+.hidden-field {
+  display: none;
+}
+
 .submission-checklist div,
 .standards-grid div {
   background: var(--surface);

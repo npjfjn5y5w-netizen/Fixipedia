@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fixipedia | Aviation Waypoint Names</title>
   <script>
-    window.FIXIPEDIA_ASSET_VERSION = "20260524-mobile-filter-no-navaids";
+    window.FIXIPEDIA_ASSET_VERSION = "20260525-netlify-forms";
     window.FIXIPEDIA_BASE_PATH = (() => {
       const pathParts = window.location.pathname.split("/").filter(Boolean);
       return window.location.hostname.endsWith("github.io") && pathParts.length
@@ -97,7 +97,18 @@
         <h2>Share the story behind a waypoint or fix.</h2>
         <p class="section-copy">Send a name-origin lead for maintainer review. Reviewed submissions can become public Fixipedia notes after the source is checked.</p>
       </div>
-      <form class="submission-form" id="submissionForm">
+      <form class="submission-form" id="submissionForm" name="origin-submission" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+        <input type="hidden" name="form-name" value="origin-submission">
+        <input type="hidden" name="subject" value="Fixipedia origin submission">
+        <p class="hidden-field" aria-hidden="true">
+          <label>Do not fill this out: <input name="bot-field" tabindex="-1"></label>
+        </p>
+        <input type="hidden" id="catalogIdentifier" name="catalogIdentifier">
+        <input type="hidden" id="catalogName" name="catalogName">
+        <input type="hidden" id="catalogType" name="catalogType">
+        <input type="hidden" id="catalogLocation" name="catalogLocation">
+        <input type="hidden" id="catalogContext" name="catalogContext">
+
         <label>
           <span>Airport <small>Optional</small></span>
           <input id="submitAirport" name="airport" type="text" placeholder="KPHX, Phoenix Sky Harbor, O'Hare...">
