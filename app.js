@@ -32,6 +32,7 @@ const GITHUB_ISSUE_URL = "https://github.com/npjfjn5y5w-netizen/Fixipedia/issues
 
 const researchNotes = window.FIXIPEDIA_NOTES ?? {};
 const dataManifest = window.NASR_MANIFEST?.chunks ?? {};
+const basePath = window.FIXIPEDIA_BASE_PATH || "/";
 
 const catalog = {
   ...(window.NASR_META ?? {
@@ -109,6 +110,29 @@ let nearbyLoadPromise = null;
 
 const routeEntities = new Set(["airport", "waypoint", "navaid"]);
 
+function getAssetPath(source) {
+  if (/^(?:[a-z]+:)?\/\//i.test(source) || source.startsWith("/")) return source;
+  return `${basePath}${source}`;
+}
+
+function getAppPath(path) {
+  const prefix = basePath === "/" ? "" : basePath.replace(/\/$/, "");
+  return `${prefix}${path}`;
+}
+
+function stripBasePathParts(parts) {
+  const baseParts = basePath.split("/").filter(Boolean);
+  if (!baseParts.length) return parts;
+  return parts.slice(0, baseParts.length).join("/") === baseParts.join("/")
+    ? parts.slice(baseParts.length)
+    : parts;
+}
+
+function isHomePath(pathname) {
+  const normalizedPath = pathname.endsWith("/") ? pathname : `${pathname}/`;
+  return normalizedPath === basePath || pathname === "/index.html";
+}
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -138,10 +162,10 @@ function getRoutePath(record) {
   const code = encodeURIComponent(record.code);
   const country = encodeURIComponent(record.country || "US");
 
-  if (entity === "airport") return `/airport/${code}`;
-  if (entity === "waypoint") return `/waypoint/${country}/${code}`;
-  if (entity === "navaid") return `/navaid/${country}/${code}`;
-  return "/";
+  if (entity === "airport") return getAppPath(`/airport/${code}`);
+  if (entity === "waypoint") return getAppPath(`/waypoint/${country}/${code}`);
+  if (entity === "navaid") return getAppPath(`/navaid/${country}/${code}`);
+  return basePath;
 }
 
 function getRouteHref(record) {
@@ -153,7 +177,7 @@ function parseRoute() {
     ? window.location.hash.slice(1)
     : "";
   const path = hashPath || window.location.pathname;
-  const parts = path.split("/").filter(Boolean).map(decodeURIComponent);
+  const parts = stripBasePathParts(path.split("/").filter(Boolean).map(decodeURIComponent));
 
   if (!parts.length || !routeEntities.has(parts[0])) return null;
 
@@ -363,7 +387,7 @@ function addCatalogRecords(newRecords) {
 function loadScript(source) {
   return new Promise((resolve, reject) => {
     const script = document.createElement("script");
-    script.src = source.startsWith("/") ? source : `/${source}`;
+    script.src = getAssetPath(source);
     script.async = true;
     script.onload = () => resolve();
     script.onerror = () => reject(new Error(`Unable to load ${source}`));
@@ -750,7 +774,7 @@ filterButtons.forEach((button) => {
 async function openRouteFromLocation(options = {}) {
   const route = parseRoute();
   if (!route) {
-    if (window.location.pathname !== "/" && window.location.pathname !== "/index.html") {
+    if (!isHomePath(window.location.pathname)) {
       detailPanel.innerHTML = `
         <div class="detail-body">
           <div class="detail-section">
@@ -960,5 +984,11 @@ submissionForm?.addEventListener("submit", async (event) => {
 });
 
 renderCatalogSummary();
+document.querySelectorAll("[data-asset-path]").forEach((element) => {
+  element.setAttribute("src", getAssetPath(element.dataset.assetPath));
+});
+document.querySelectorAll(".brand").forEach((element) => {
+  element.setAttribute("href", basePath);
+});
 renderResults();
 openRouteFromLocation();

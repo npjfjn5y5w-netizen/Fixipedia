@@ -4,14 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fixipedia | Aviation Waypoint Names</title>
-  <link rel="icon" href="/assets/fixipedia-mark.jpg">
-  <link rel="stylesheet" href="/styles.css">
+  <script>
+    window.FIXIPEDIA_BASE_PATH = (() => {
+      const pathParts = window.location.pathname.split("/").filter(Boolean);
+      return window.location.hostname.endsWith("github.io") && pathParts.length
+        ? `/${pathParts[0]}/`
+        : "/";
+    })();
+    document.write(`<link rel="icon" href="${window.FIXIPEDIA_BASE_PATH}assets/fixipedia-mark.jpg">`);
+    document.write(`<link rel="stylesheet" href="${window.FIXIPEDIA_BASE_PATH}styles.css">`);
+  </script>
+  <noscript>
+    <link rel="icon" href="/assets/fixipedia-mark.jpg">
+    <link rel="stylesheet" href="/styles.css">
+  </noscript>
 </head>
 <body>
   <header class="topbar">
     <a class="brand" href="/" aria-label="Fixipedia home">
       <span class="brand-mark" aria-hidden="true">
-        <img src="/assets/fixipedia-mark.jpg" alt="">
+        <img src="/assets/fixipedia-mark.jpg" data-asset-path="assets/fixipedia-mark.jpg" alt="">
       </span>
       <span>
         <strong>Fixipedia</strong>
@@ -181,10 +193,16 @@
     </section>
   </main>
 
-  <script src="/data/nasr-meta.js"></script>
-  <script src="/data/nasr-manifest.js"></script>
-  <script src="/data/fixipedia-notes.js"></script>
-  <script src="/data/nasr-navaids.js"></script>
-  <script src="/app.js"></script>
+  <script>
+    [
+      "data/nasr-meta.js",
+      "data/nasr-manifest.js",
+      "data/fixipedia-notes.js",
+      "data/nasr-navaids.js",
+      "app.js"
+    ].forEach((source) => {
+      document.write(`<script src="${window.FIXIPEDIA_BASE_PATH}${source}"><\/script>`);
+    });
+  </script>
 </body>
 </html>
