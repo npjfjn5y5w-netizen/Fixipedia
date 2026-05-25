@@ -60,4 +60,10 @@ The public `Submit an Origin` form is the contributor-facing UI. It uses Netlify
 
 Enable form detection in Netlify, then configure submission notifications in the Netlify project settings if email alerts are desired. The browser submit handler posts the static form payload to Netlify and includes hidden catalog context when the submitted fix can be matched to a loaded NASR record.
 
+The archive snapshot includes a public origin-lead tally powered by the Netlify Function at `/.netlify/functions/submission-count`. Configure these Netlify environment variables for the count to populate:
+
+- `NETLIFY_AUTH_TOKEN`: a Netlify personal access token with access to the site forms.
+- `NETLIFY_SITE_ID`: the Netlify site ID. Netlify may also provide `SITE_ID`; `NETLIFY_SITE_ID` is preferred for clarity.
+- `NETLIFY_FORM_ID` optional: the exact form ID for `origin-submission` if automatic form lookup ever fails.
+
 Approved name-origin notes should be added to `data/fixipedia-notes.js`, then committed and redeployed.

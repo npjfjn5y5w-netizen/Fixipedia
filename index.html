@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fixipedia | Aviation Waypoint Names</title>
   <script>
-    window.FIXIPEDIA_ASSET_VERSION = "20260525-thank-you";
+    window.FIXIPEDIA_ASSET_VERSION = "20260525-submission-count";
     window.FIXIPEDIA_BASE_PATH = (() => {
       const pathParts = window.location.pathname.split("/").filter(Boolean);
       return window.location.hostname.endsWith("github.io") && pathParts.length
@@ -155,12 +155,12 @@
 
     <section class="archive-hero" aria-labelledby="archive-title">
       <div class="panel-heading">
-        <p class="eyebrow">Public aviation reference</p>
-        <h1 id="archive-title">Fixipedia aviation name archive</h1>
-        <p class="intro">Search FAA catalog records for airports, navaids, fixes, and RNAV waypoints, then connect each name to reviewed origin notes and source evidence.</p>
+        <p class="eyebrow">Archive snapshot</p>
+        <h1 id="archive-title">Fixipedia community archive</h1>
+        <p class="intro">Track the live FAA catalog and the origin leads people have sent in for review, then connect each name to source-backed stories over time.</p>
       </div>
 
-      <div class="catalog-summary" aria-label="Live catalog summary">
+      <div class="catalog-summary" aria-label="Archive summary">
         <div class="catalog-summary-label">
           <span>Live catalog</span>
           <strong id="catalogTotal">0</strong>
@@ -176,6 +176,10 @@
         <div class="catalog-summary-stat">
           <span>Navaids</span>
           <strong id="navaidCount">0</strong>
+        </div>
+        <div class="catalog-summary-stat">
+          <span>Origin leads</span>
+          <strong id="submissionCount">-</strong>
         </div>
       </div>
     </section>

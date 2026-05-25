@@ -99,6 +99,7 @@ const catalogTotal = document.querySelector("#catalogTotal");
 const airportCount = document.querySelector("#airportCount");
 const waypointCount = document.querySelector("#waypointCount");
 const navaidCount = document.querySelector("#navaidCount");
+const submissionCount = document.querySelector("#submissionCount");
 const mobileMedia = window.matchMedia("(max-width: 720px)");
 
 let activeFilter = "all";
@@ -331,6 +332,22 @@ function renderCatalogSummary() {
   if (airportCount) airportCount.textContent = (counts.airports ?? 0).toLocaleString();
   if (waypointCount) waypointCount.textContent = (counts.waypoints ?? 0).toLocaleString();
   if (navaidCount) navaidCount.textContent = (counts.navaids ?? 0).toLocaleString();
+}
+
+async function loadSubmissionCount() {
+  if (!submissionCount) return;
+
+  try {
+    const response = await fetch("/.netlify/functions/submission-count");
+    if (!response.ok) throw new Error(`Count failed with ${response.status}`);
+
+    const payload = await response.json();
+    if (!Number.isFinite(payload.count)) return;
+
+    submissionCount.textContent = payload.count.toLocaleString();
+  } catch (error) {
+    submissionCount.textContent = "-";
+  }
 }
 
 function setThankYouMode(isActive) {
@@ -973,6 +990,7 @@ submissionForm?.addEventListener("submit", async (event) => {
 });
 
 renderCatalogSummary();
+loadSubmissionCount();
 document.querySelectorAll("[data-asset-path]").forEach((element) => {
   element.setAttribute("src", getAssetPath(element.dataset.assetPath));
 });
