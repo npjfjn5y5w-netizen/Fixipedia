@@ -151,6 +151,7 @@ main {
 .search-panel,
 .detail-panel,
 .workflow-band,
+.about-band,
 .submit-grid,
 .thank-you-section {
   background: rgba(255, 255, 255, 0.88);
@@ -169,6 +170,7 @@ main {
 .panel-heading h1,
 .thank-you-section h1,
 .workflow-band h2,
+.about-band h2,
 .submit-grid h2 {
   font-family: var(--font-display);
   letter-spacing: 0;
@@ -649,17 +651,23 @@ input[type="search"] {
 }
 
 .workflow-band h2,
+.about-band h2,
 .submit-grid h2 {
   font-size: clamp(1.8rem, 4vw, 3.2rem);
 }
 
 .workflow-band,
+.about-band,
 .submit-grid {
   display: grid;
   gap: 26px;
   grid-template-columns: minmax(240px, 0.55fr) 1fr;
   margin-top: 22px;
   padding: 28px;
+}
+
+.about-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .thank-you-section {
@@ -863,6 +871,7 @@ input[type="search"] {
   .archive-hero,
   .workspace,
   .workflow-band,
+  .about-band,
   .submit-grid {
     grid-template-columns: 1fr;
   }
@@ -913,6 +922,7 @@ input[type="search"] {
   .detail-body,
   .thank-you-section,
   .workflow-band,
+  .about-band,
   .submit-grid {
     padding: 18px;
   }
