@@ -8,6 +8,12 @@ const AIRPORT_DATA_DIR = path.join(ROOT, "airport-data");
 const WAYPOINT_DATA_DIR = path.join(ROOT, "waypoint-data");
 const AIRPORT_CHUNK_COUNT = 6;
 const WAYPOINT_CHUNK_COUNT = 18;
+const DEFAULT_EFFECTIVE_DATE = "2024/12/26";
+
+function getEffectiveDate() {
+  const argument = process.argv.find((value) => value.startsWith("--effective-date="));
+  return compact(argument?.split("=").slice(1).join("=") || process.env.NASR_EFFECTIVE_DATE || DEFAULT_EFFECTIVE_DATE);
+}
 
 function parseCsv(text) {
   const rows = [];
@@ -304,7 +310,7 @@ function main() {
 
   const meta = {
     source: "FAA NASR 28 Day Subscription",
-    effectiveDate: "2024/12/26",
+    effectiveDate: getEffectiveDate(),
     generatedAt: new Date().toISOString(),
     counts: {
       airports: airports.length,

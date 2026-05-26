@@ -47,7 +47,7 @@ Those files are ignored by Git. If they appear locally, treat them as disposable
 The importer script can regenerate the split NASR catalog files from extracted FAA CSV files:
 
 ```bash
-node scripts/import-nasr.js
+node scripts/import-nasr.js --effective-date=YYYY/MM/DD
 ```
 
 The importer writes the NASR deploy files listed above and removes known stale generated bundles from older layouts. It does not write `data/fixipedia-notes.js`; reviewed name-origin notes are maintained by hand after source review.
@@ -67,6 +67,40 @@ The archive snapshot includes a public origin-lead tally powered by the Netlify 
 - `NETLIFY_FORM_ID` optional: the exact form ID for `origin-submission` if automatic form lookup ever fails.
 
 Approved name-origin notes should be added to `data/fixipedia-notes.js`, then committed and redeployed.
+
+## 28-Day NASR Catalog Refresh Workflow
+
+The FAA publishes a 28 Day NASR Subscription. Use this workflow once per new effective cycle to keep Fixipedia's airport, waypoint, and navaid catalog current.
+
+1. Download the latest FAA 28 Day NASR Subscription files.
+2. Extract the CSV files locally.
+3. Copy these files into `data/raw/`:
+   - `APT_BASE.csv`
+   - `FIX_BASE.csv`
+   - `NAV_BASE.csv`
+4. Run the importer with the new FAA effective date:
+
+```bash
+node scripts/import-nasr.js --effective-date=YYYY/MM/DD
+```
+
+5. Review the generated changes:
+   - `data/nasr-meta.js`
+   - `data/nasr-manifest.js`
+   - `data/nasr-navaids.js`
+   - `airport-data/nasr-airports-*.js`
+   - `waypoint-data/nasr-waypoints-*.js`
+6. Confirm `data/fixipedia-notes.js` was not overwritten.
+7. Run a local preview and spot-check search for:
+   - one known airport
+   - one known waypoint
+   - one known navaid
+   - one record with a reviewed Fixipedia note
+8. Commit and push the generated catalog update.
+9. Wait for Netlify to deploy.
+10. Open the public site and confirm the archive count and effective date updated.
+
+Keep reviewed origin notes separate from NASR refreshes when possible. Catalog refresh commits should be easy to identify and revert without losing researched notes.
 
 ## Origin Story Publishing Workflow
 
