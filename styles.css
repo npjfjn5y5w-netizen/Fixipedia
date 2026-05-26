@@ -130,6 +130,26 @@ main {
   padding: 28px clamp(16px, 4vw, 52px) 54px;
 }
 
+.site-footer {
+  color: var(--muted);
+  font-size: 0.9rem;
+  padding: 0 clamp(16px, 4vw, 52px) 34px;
+  text-align: center;
+}
+
+.site-footer p {
+  margin: 0;
+}
+
+.site-footer a {
+  color: var(--orange-dark);
+  font-weight: 800;
+}
+
+.site-footer a:hover {
+  color: var(--orange);
+}
+
 .archive-hero,
 .workspace {
   display: grid;
