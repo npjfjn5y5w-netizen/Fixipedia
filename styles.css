@@ -267,6 +267,11 @@ main {
   margin: 16px 0 0;
 }
 
+.privacy-note {
+  font-size: 0.92rem;
+  margin-top: 10px;
+}
+
 .search-box {
   align-items: center;
   background: var(--surface);
