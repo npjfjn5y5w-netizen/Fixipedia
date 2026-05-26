@@ -67,3 +67,43 @@ The archive snapshot includes a public origin-lead tally powered by the Netlify 
 - `NETLIFY_FORM_ID` optional: the exact form ID for `origin-submission` if automatic form lookup ever fails.
 
 Approved name-origin notes should be added to `data/fixipedia-notes.js`, then committed and redeployed.
+
+## Origin Story Publishing Workflow
+
+Use this checklist whenever a new origin story comes in through Netlify Forms.
+
+1. Open the Netlify project dashboard and go to **Forms**.
+2. Open the `origin-submission` form.
+3. Review the newest verified submission. Check:
+   - `fixName`
+   - `airport`
+   - `procedure`
+   - `originStory`
+   - `notes`
+   - hidden catalog fields such as `catalogIdentifier`, `catalogType`, and `catalogContext`
+4. Confirm the submitted identifier exists in Fixipedia search. Use the hidden catalog fields first, then search the public site if needed.
+5. Source-check the story before publishing. Use the submission as a lead, not final copy.
+6. Rewrite the public note in your own words. Do not paste private details, sensitive details, or long copied text from the submission or another source.
+7. Add or update the identifier in `data/fixipedia-notes.js`.
+8. Save, commit, and push the change to GitHub.
+9. Wait for Netlify to deploy the new commit.
+10. Open the public site, search the identifier, and confirm the new origin note appears correctly.
+
+Use this object shape when adding a reviewed note:
+
+```js
+IDENTIFIER: {
+  namedAfter: "Short, public-facing explanation of who or what the identifier is named after.",
+  confidence: "confirmed",
+  archiveNote: "One or two sentences with helpful context for the public archive.",
+  evidence: [
+    "Source-backed fact that supports the origin."
+  ],
+  sources: [
+    "Source name or URL"
+  ],
+  openQuestions: "Any remaining uncertainty, or 'None known.'"
+}
+```
+
+Use `confidence: "confirmed"` when the source directly supports the origin. Use `confidence: "likely"` when the evidence is strong but not direct. Leave uncertain or unsupported submissions unpublished until they can be checked.
